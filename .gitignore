@@ -9,6 +9,9 @@ server/main
 client/client
 server/server
 
+# build directory
+build
+
 # Prerequisites
 *.d
 
