@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd client && sudo docker build -t tic_tac_toe_client .
+
+cd ../server && sudo docker build -t tic_tac_toe_server .
