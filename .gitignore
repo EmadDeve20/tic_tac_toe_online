@@ -6,8 +6,6 @@
 
 client/main
 server/main
-client
-server
 client/client
 server/server
 
