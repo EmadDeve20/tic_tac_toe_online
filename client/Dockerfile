@@ -16,5 +16,3 @@ RUN mkdir /app/
 WORKDIR /app/
 
 COPY --from=builder /app/client .
-
-CMD [ "./client" ]
