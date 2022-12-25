@@ -9,6 +9,14 @@ int server_fd, new_socket, valread, port = 8013;
 char buffer[1024] = {0};
 struct sockaddr_in socket_address;
 
+typedef struct users {
+    char* ipAddress;
+    char* username;
+    struct users* next;
+} Users;
+
+typedef  Users* usersPtr;
+
 void print_welcome_message();
 void setup_server();
 
