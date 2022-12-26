@@ -11,7 +11,7 @@ struct sockaddr_in socket_address;
 
 typedef struct users {
     uint32_t ipAddress;
-    char* username;
+    char username[20];
     struct users* nextUser;
 } Users;
 

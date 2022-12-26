@@ -5,7 +5,7 @@
 
 int port = 8013, sock = 0, client_fd;
 char server_address[1024];
-char username[1024];
+char username[20];
 struct sockaddr_in socket_address;
 
 void initial_settings();
@@ -31,7 +31,7 @@ void initial_settings()
     scanf("%d", &port);
     
     printf("Enter your name: ");
-    scanf("%1023s", username);
+    scanf("%19s", username);
 
 }
 
