@@ -10,9 +10,9 @@ char buffer[1024] = {0};
 struct sockaddr_in socket_address;
 
 typedef struct users {
-    char* ipAddress;
+    uint32_t ipAddress;
     char* username;
-    struct users* next;
+    struct users* nextUser;
 } Users;
 
 typedef  Users* usersPtr;
@@ -81,5 +81,7 @@ void setup_server()
         perror("Accept Failed!");
         exit(EXIT_FAILURE);
     }
+
+    printf("%d\n", socket_address.sin_addr.s_addr);
 
 }
