@@ -6,6 +6,8 @@
 #include <unistd.h>
 
 #define BUFFER_SIZE 1024
+#define LOGIN_REQUEST "LOGIN"
+#define RESTRICT_PARAS_CHAR " " // Actually space character
 
 int server_fd, new_socket, valread, port = 8013;
 char buffer[1024] = {0};
@@ -21,6 +23,7 @@ typedef  Users* usersPtr;
 
 void print_welcome_message();
 void setup_server();
+void requests_parser();
 
 int main()
 {
@@ -91,6 +94,20 @@ void setup_server()
     if (valread >= 0)
     {
         printf("Data:%s\n", buffer);
+        requests_parser();
+    }
+
+}
+
+void requests_parser()
+{
+    char *token;
+    token = strtok(buffer, RESTRICT_PARAS_CHAR);
+
+    if (strcmp(token, LOGIN_REQUEST) == 0)
+    {
+        token = strtok(NULL, RESTRICT_PARAS_CHAR);
+        printf("This is Login Request For %s User!", token);
     }
 
 }
