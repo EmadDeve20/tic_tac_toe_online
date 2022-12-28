@@ -3,21 +3,26 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <string.h>
+#include <unistd.h>
+
 
 #define USERNAME_LENGTH 20
 #define LOGIN_REQUEST "LOGIN "
 #define LOGOUT_REQUEST "LOGOUT "
 #define LOGIN_REQUEST_SIZE  6 + USERNAME_LENGTH
 #define LOGOU_REQUEST_SIZE 7 + (LOGOUT_REQUEST) + USERNAME_LENGTH
+#define LOGIN_STATUS_OK "LOGIN OK"
+#define LOGIN_STATUS_SIZE 9
 
-int port = 8013, sock = 0, client_fd;
+int port = 8013, sock = 0, client_fd, valread;
 char server_address[1024];
 char username[USERNAME_LENGTH];
 struct sockaddr_in socket_address;
+char buffer[1024];
 
 void initial_settings();
 void client_setup();
-void try_to_login();
+int try_to_login();
 
 
 int main()
@@ -25,7 +30,7 @@ int main()
 
     initial_settings();
     client_setup();
-    try_to_login();
+    printf("%s\n", try_to_login() ? "LOGIN TO SERVER" : "CAN NOT LOGIN TO SERVER!");
 
 }
 
@@ -78,11 +83,18 @@ void client_setup()
 This function is for trying to login with a new Account!
 actually the account with the name parameter
 */
-void try_to_login()
+int try_to_login()
 {   
-    // char *login_request = strncat("LOGIN ", username, strlen(username));
     char login_request[LOGIN_REQUEST_SIZE] = LOGIN_REQUEST;
     strncat(login_request, username, strlen(username));
-    printf("REQUEST TO SEND %s\n", login_request);
     send(sock, login_request, strlen(login_request), 0);
+
+    valread = read(sock, buffer, LOGIN_STATUS_SIZE);
+    if (valread > 0)
+    {
+        if (strcmp(buffer, LOGIN_STATUS_OK))
+            return 1;
+    }
+
+    return 0;
 }
