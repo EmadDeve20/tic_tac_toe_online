@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include <string.h>
+
+#define LOGIN_REQUEST "LOGIN "
+#define LOGIN_REQUEST_SIZE 26
 
 int port = 8013, sock = 0, client_fd;
 char server_address[1024];
@@ -10,6 +14,7 @@ struct sockaddr_in socket_address;
 
 void initial_settings();
 void client_setup();
+void try_to_login();
 
 
 int main()
@@ -17,6 +22,7 @@ int main()
 
     initial_settings();
     client_setup();
+    try_to_login();
 
 }
 
@@ -63,4 +69,17 @@ void client_setup()
         perror("Connection Faild!\n");
         exit(EXIT_FAILURE);
     }
+}
+
+/*
+This function is for trying to login with a new Account!
+actually the account with the name parameter
+*/
+void try_to_login()
+{   
+    // char *login_request = strncat("LOGIN ", username, strlen(username));
+    char login_request[LOGIN_REQUEST_SIZE] = LOGIN_REQUEST;
+    strncat(login_request, username, strlen(username));
+    printf("REQUEST TO SEND %s\n", login_request);
+    send(sock, login_request, strlen(login_request), 0);
 }
