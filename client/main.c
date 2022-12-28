@@ -92,7 +92,7 @@ int try_to_login()
     valread = read(sock, buffer, LOGIN_STATUS_SIZE);
     if (valread > 0)
     {
-        if (strcmp(buffer, LOGIN_STATUS_OK))
+        if (strcmp(buffer, LOGIN_STATUS_OK) == 0)
             return 1;
     }
 
