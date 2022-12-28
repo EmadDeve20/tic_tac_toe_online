@@ -99,6 +99,9 @@ void setup_server()
 
 }
 
+/*
+this function parses all of the requests
+*/
 void requests_parser()
 {
     char *token;
