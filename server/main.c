@@ -37,6 +37,7 @@ int main()
 void print_welcome_message()
 {
     puts("TIC TAC TOE  SERVER IS UP!");
+    fflush(stdout);
 }
 
 //setup server
