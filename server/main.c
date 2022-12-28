@@ -15,15 +15,19 @@ struct sockaddr_in socket_address;
 
 typedef struct users {
     uint32_t ipAddress;
-    char username[20];
+    char *username;
     struct users* nextUser;
 } Users;
 
 typedef  Users* usersPtr;
 
+//initialize the list of users as LinkedList
+usersPtr list_of_users;
+
 void print_welcome_message();
 void setup_server();
 void requests_parser();
+void insert_user(char *username);
 
 int main()
 {
@@ -110,7 +114,35 @@ void requests_parser()
     if (strcmp(token, LOGIN_REQUEST) == 0)
     {
         token = strtok(NULL, RESTRICT_PARAS_CHAR);
-        printf("This is Login Request For %s User!", token);
+        insert_user(token);
     }
 
+}
+
+/*
+Insert the new user
+*/
+void insert_user(char *username)
+{
+    usersPtr newUser;
+    newUser = malloc(sizeof(Users));
+
+    if (newUser != NULL) // is space available
+    {
+        newUser->username = username;
+        newUser->ipAddress = socket_address.sin_addr.s_addr;
+
+        if (list_of_users == NULL)
+        {
+            newUser->nextUser = list_of_users;
+            list_of_users = newUser;
+        }
+        else
+        {
+            list_of_users->nextUser = newUser;
+            newUser->nextUser = NULL;
+        }
+
+        printf("\n\nUser %s added", username);
+    }
 }
