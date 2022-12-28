@@ -8,6 +8,10 @@
 #define BUFFER_SIZE 1024
 #define LOGIN_REQUEST "LOGIN"
 #define RESTRICT_PARAS_CHAR " " // Actually space character
+#define LOGIN_STATUS_OK "LOGIN OK"
+#define LOGIN_STATUS_FAILED "LOGIN NK"
+#define LOGIN_STATUS_SIZE 9
+
 
 int server_fd, new_socket, valread, port = 8013;
 char buffer[1024] = {0};
@@ -144,5 +148,10 @@ void insert_user(char *username)
         }
 
         printf("\n\nUser %s added", username);
+        send(new_socket, LOGIN_STATUS_OK, LOGIN_STATUS_SIZE, 0);
+    }
+    else
+    {
+        send(new_socket, LOGIN_STATUS_OK, LOGIN_STATUS_SIZE, 0);
     }
 }
