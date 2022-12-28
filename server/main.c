@@ -5,6 +5,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#define BUFFER_SIZE 1024
+
 int server_fd, new_socket, valread, port = 8013;
 char buffer[1024] = {0};
 struct sockaddr_in socket_address;
@@ -83,6 +85,12 @@ void setup_server()
         exit(EXIT_FAILURE);
     }
 
-    printf("%d\n", socket_address.sin_addr.s_addr);
+    // printf("%d\n", socket_address.sin_addr.s_addr);
+    valread = read(new_socket, buffer, BUFFER_SIZE);
+
+    if (valread >= 0)
+    {
+        printf("Data:%s\n", buffer);
+    }
 
 }
