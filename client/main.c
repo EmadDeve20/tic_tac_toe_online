@@ -4,12 +4,15 @@
 #include <sys/socket.h>
 #include <string.h>
 
+#define USERNAME_LENGTH 20
 #define LOGIN_REQUEST "LOGIN "
-#define LOGIN_REQUEST_SIZE 26
+#define LOGOUT_REQUEST "LOGOUT "
+#define LOGIN_REQUEST_SIZE strlen(LOGIN_REQUEST) + USERNAME_LENGTH
+#define LOGOU_REQUEST_SIZE strlen(LOGOUT_REQUEST) + USERNAME_LENGTH
 
 int port = 8013, sock = 0, client_fd;
 char server_address[1024];
-char username[20];
+char username[USERNAME_LENGTH];
 struct sockaddr_in socket_address;
 
 void initial_settings();
