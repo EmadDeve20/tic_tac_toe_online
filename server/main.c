@@ -16,7 +16,8 @@
 #define LOGIN_STATUS_SIZE 9
 
 
-int server_fd, new_socket, valread, port = DEFAULT_PORT;
+int server_fd, new_socket, valread;
+unsigned int port = DEFAULT_PORT;
 char buffer[1024] = {0};
 struct sockaddr_in socket_address;
 
@@ -186,5 +187,5 @@ int new_username_valid(char *new_username)
 
 void chage_port(char **argv)
 {
-    if(isdigit(argv[1])) port = atoi(argv[1]);
+    if(isdigit(argv[1])) port = (0 <= atoi(argv[1]) ? atoi(argv[1]) : -1 * atoi(argv[1]));
 }
