@@ -4,6 +4,8 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <ctype.h>
+#include <stdlib.h>
 
 #define DEFAULT_PORT 8013
 #define BUFFER_SIZE 1024
@@ -35,8 +37,9 @@ void requests_parser();
 void insert_user(char *username);
 int user_list_is_empty(const usersPtr users_list);
 int new_username_valid(char *);
+void chage_port(char **argv);
 
-int main()
+int main(int argc, char **argv)
 {
 
     print_welcome_message();
@@ -179,4 +182,9 @@ int new_username_valid(char *new_username)
     }
 
     return 1;
+}
+
+void chage_port(char **argv)
+{
+    if(isdigit(argv[1])) port = atoi(argv[1]);
 }
