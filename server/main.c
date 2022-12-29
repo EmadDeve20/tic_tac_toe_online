@@ -43,6 +43,9 @@ void chage_port(const char *port);
 int main(int argc, char **argv)
 {
 
+    // Check If We Have an Argument, Change the Default Port
+    if (argc > 1) chage_port(argv[1]);
+
     print_welcome_message();
     setup_server();
     
