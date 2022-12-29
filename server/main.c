@@ -32,7 +32,8 @@ void print_welcome_message();
 void setup_server();
 void requests_parser();
 void insert_user(char *username);
-int user_list_is_empty();
+int user_list_is_empty(usersPtr *users_list);
+int new_username_valid(char *);
 
 int main()
 {
@@ -158,7 +159,22 @@ void insert_user(char *username)
 }
 
 // list_of_users is Empty??
-int user_list_is_empty()
+int user_list_is_empty(usersPtr *users_list)
 {
-    return list_of_users == NULL;
+    return users_list == NULL;
+}
+
+// the new username is valid??
+int new_username_valid(char *new_username)
+{
+    usersPtr *__users = &list_of_users;
+
+    while (!user_list_is_empty(__users))
+    {
+        if (strcmp((*__users)->username, new_username) == 0)
+            return 0; // This username Exists! So new username is not Valid! it is must be unique
+        __users = &(*__users)->nextUser;
+    }
+
+    return 1;
 }
