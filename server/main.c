@@ -32,6 +32,7 @@ void print_welcome_message();
 void setup_server();
 void requests_parser();
 void insert_user(char *username);
+int user_list_is_empty();
 
 int main()
 {
@@ -154,4 +155,10 @@ void insert_user(char *username)
     {
         send(new_socket, LOGIN_STATUS_OK, LOGIN_STATUS_SIZE, 0);
     }
+}
+
+// list_of_users is Empty??
+int user_list_is_empty()
+{
+    return list_of_users == NULL;
 }
