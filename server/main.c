@@ -133,7 +133,8 @@ void insert_user(char *username)
     usersPtr newUser;
     newUser = malloc(sizeof(Users));
 
-    if (newUser != NULL) // is space available
+    // is space available and the username is valid
+    if (newUser != NULL && new_username_valid(username)) 
     {
         newUser->username = username;
         newUser->ipAddress = socket_address.sin_addr.s_addr;
