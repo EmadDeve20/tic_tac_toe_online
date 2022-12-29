@@ -38,7 +38,7 @@ void requests_parser();
 void insert_user(char *username);
 int user_list_is_empty(const usersPtr users_list);
 int new_username_valid(char *);
-void chage_port(char **argv);
+void chage_port(const char *port);
 
 int main(int argc, char **argv)
 {
@@ -185,7 +185,13 @@ int new_username_valid(char *new_username)
     return 1;
 }
 
-void chage_port(char **argv)
+// Change the port of the server. If Can not change, Default Port is 8013
+void chage_port(const char  *port_string)
 {
-    if(isdigit(argv[1])) port = (0 <= atoi(argv[1]) ? atoi(argv[1]) : -1 * atoi(argv[1]));
+
+    for (size_t i = 0; i < strlen(port_string); i++)
+        if (!isdigit(port_string[0]))
+            return;
+
+    port = atoi(port_string);
 }
