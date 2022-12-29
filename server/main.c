@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#define DEFAULT_PORT 8013
 #define BUFFER_SIZE 1024
 #define LOGIN_REQUEST "LOGIN"
 #define RESTRICT_PARAS_CHAR " " // Actually space character
@@ -13,7 +14,7 @@
 #define LOGIN_STATUS_SIZE 9
 
 
-int server_fd, new_socket, valread, port = 8013;
+int server_fd, new_socket, valread, port = DEFAULT_PORT;
 char buffer[1024] = {0};
 struct sockaddr_in socket_address;
 
