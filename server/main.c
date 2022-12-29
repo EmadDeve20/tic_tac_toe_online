@@ -119,13 +119,13 @@ this function parses all of the requests
 */
 void requests_parser()
 {
-    char *token;
-    token = strtok(buffer, RESTRICT_PARAS_CHAR);
+    char *string_slice;
+    string_slice = strtok(buffer, RESTRICT_PARAS_CHAR);
 
-    if (strcmp(token, LOGIN_REQUEST) == 0)
+    if (strcmp(string_slice, LOGIN_REQUEST) == 0)
     {
-        token = strtok(NULL, RESTRICT_PARAS_CHAR);
-        insert_user(token);
+        string_slice = strtok(NULL, RESTRICT_PARAS_CHAR);
+        insert_user(string_slice);
     }
 
 }
