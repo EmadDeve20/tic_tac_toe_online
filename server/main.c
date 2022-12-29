@@ -57,6 +57,8 @@ int main(int argc, char **argv)
 void print_welcome_message()
 {
     puts("TIC TAC TOE  SERVER IS UP!");
+    //TODO: Print the Ip Address of the server
+    printf("SERVER PORT IS: %d\n", port);
     fflush(stdout);
 }
 
