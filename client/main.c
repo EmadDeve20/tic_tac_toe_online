@@ -23,6 +23,7 @@ char buffer[1024];
 void initial_settings();
 void client_setup();
 int try_to_login();
+void logout();
 
 
 int main()
@@ -97,4 +98,14 @@ int try_to_login()
     }
 
     return 0;
+}
+
+/*
+send logout request 
+*/
+void logout()
+{
+    char logout_request[LOGOU_REQUEST_SIZE] = LOGOUT_REQUEST;
+    strncat(logout_request, username, strlen(username));
+    send(sock, logout_request, strlen(logout_request), 0);
 }
