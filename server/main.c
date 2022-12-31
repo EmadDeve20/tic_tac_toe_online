@@ -157,7 +157,7 @@ void insert_user(char *username)
 {
     usersPtr newUser;
     newUser = malloc(sizeof(Users));
-
+    log_type log_t;
     // is space available and the username is valid
     if (newUser != NULL && new_username_valid(username)) 
     {
@@ -175,13 +175,16 @@ void insert_user(char *username)
             newUser->nextUser = NULL;
         }
 
-        printf("\n\nUser %s added", username);
+        log_t = OK;
         send(new_socket, LOGIN_STATUS_OK, LOGIN_STATUS_SIZE, 0);
     }
     else
     {
+        log_t = ERROR;
         send(new_socket, LOGIN_STATUS_OK, LOGIN_STATUS_SIZE, 0);
     }
+
+    log_t == OK ? log_print(&log_t, username, "Created SuccessFul!") : log_print(&log_t, "Memory is not available for", username, "user creation"); 
 }
 
 // list_of_users is Empty??
