@@ -128,7 +128,6 @@ void setup_server()
 
     if (valread >= 0)
     {
-        printf("Data:%s\n", buffer);
         requests_parser();
     }
 
