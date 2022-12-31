@@ -15,6 +15,13 @@
 #define LOGIN_STATUS_FAILED "LOGIN NK"
 #define LOGIN_STATUS_SIZE 9
 
+enum LogMessageType
+{
+    OK,
+    WARNING,
+    ERROR,
+    INFO,
+};
 
 int server_fd, new_socket, valread;
 unsigned int port = DEFAULT_PORT;
