@@ -13,6 +13,9 @@
 #define LOGOU_REQUEST_SIZE 7 +  USERNAME_LENGTH
 #define LOGIN_STATUS_OK "LOGIN OK"
 #define LOGIN_STATUS_SIZE 9
+#define LOGIN_REQUEST_FORMAT "LOGIN %s" // LOGIN $username
+#define LOGOUT_REQUEST_FORMAT "LOGOUT %s" // LOGOUT $username
+
 
 int port = 8013, sock = 0, client_fd, valread;
 char server_address[1024];
@@ -86,8 +89,8 @@ actually the account with the name parameter
 */
 int try_to_login()
 {   
-    char login_request[LOGIN_REQUEST_SIZE] = LOGIN_REQUEST;
-    strncat(login_request, username, strlen(username));
+    char login_request[LOGIN_REQUEST_SIZE];
+    sprintf(login_request, LOGIN_REQUEST_FORMAT, username);
     send(sock, login_request, strlen(login_request), 0);
 
     valread = read(sock, buffer, LOGIN_STATUS_SIZE);
@@ -105,7 +108,7 @@ send logout request
 */
 void logout()
 {
-    char logout_request[LOGOU_REQUEST_SIZE] = LOGOUT_REQUEST;
-    strncat(logout_request, username, strlen(username));
+    char logout_request[LOGOU_REQUEST_SIZE];
+    sprintf(logout_request, LOGOUT_REQUEST_FORMAT, username);
     send(sock, logout_request, strlen(logout_request), 0);
 }
