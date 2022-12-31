@@ -15,13 +15,13 @@
 #define LOGIN_STATUS_FAILED "LOGIN NK"
 #define LOGIN_STATUS_SIZE 9
 
-enum LogMessageType
+typedef enum LogMessageType
 {
     OK,
     WARNING,
     ERROR,
     INFO,
-};
+} log_type;
 
 int server_fd, new_socket, valread;
 unsigned int port = DEFAULT_PORT;
@@ -46,6 +46,7 @@ void insert_user(char *username);
 int user_list_is_empty(const usersPtr users_list);
 int new_username_valid(char *);
 void chage_port(const char *port);
+void log(const char* message, log_type message_type);
 
 int main(int argc, char **argv)
 {
