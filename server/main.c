@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define DEFAULT_PORT 8013
 #define BUFFER_SIZE 1024
@@ -46,7 +47,7 @@ void insert_user(char *username);
 int user_list_is_empty(const usersPtr users_list);
 int new_username_valid(char *);
 void chage_port(const char *port);
-void log(const char* message, log_type message_type);
+void log_print(const char* message, log_type message_type);
 
 int main(int argc, char **argv)
 {
@@ -207,4 +208,35 @@ void chage_port(const char  *port_string)
             return;
 
     port = atoi(port_string);
+}
+
+void log_print(const char* message, log_type message_type)
+{   
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    
+    switch (message_type)
+    {
+    case OK:
+        printf("[%d-%02d-%02d  %02d:%02d] %s\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, message);
+        break;
+    
+    case WARNING:
+        printf("[%d-%02d-%02d  %02d:%02d] %s\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, message);
+        break;
+    
+    case ERROR:
+        printf("[%d-%02d-%02d  %02d:%02d] %s\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, message);
+        break;
+    
+    case INFO:
+        printf("[%d-%02d-%02d  %02d:%02d] %s\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, message);
+        break;
+
+    default:
+        printf("[%d-%02d-%02d  %02d:%02d] %s\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, message);
+        break;
+    }
+
+    fflush(stdout);
 }
