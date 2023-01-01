@@ -51,7 +51,7 @@ void setup_server();
 void requests_parser();
 void insert_user(char *username);
 int user_list_is_empty(const usersPtr users_list);
-int new_username_valid(char *);
+int new_username_is_valid(char *);
 void chage_port(const char *port);
 void log_print(const log_type *type, const char* message, ...);
 
@@ -158,7 +158,7 @@ void insert_user(char *username)
     newUser = malloc(sizeof(Users));
     log_type log_t;
     // is space available and the username is valid
-    if (newUser != NULL && new_username_valid(username)) 
+    if (newUser != NULL && new_username_is_valid(username)) 
     {
         newUser->username = username;
         newUser->ipAddress = socket_address.sin_addr.s_addr;
@@ -193,7 +193,7 @@ int user_list_is_empty(const usersPtr users_list)
 }
 
 // the new username is valid??
-int new_username_valid(char *new_username)
+int new_username_is_valid(char *new_username)
 {
     usersPtr *__users = &list_of_users;
 
