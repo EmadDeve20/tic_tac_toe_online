@@ -52,6 +52,8 @@ typedef struct playground {
     char *player_two;
     char player_one_char;
     char player_two_char;
+    unsigned short first_player_points;
+    unsigned short secound_player_points;
     struct playground *nextPlayGround;
 } playGround;
 
