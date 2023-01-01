@@ -163,15 +163,20 @@ void insert_user(char *username)
         newUser->username = username;
         newUser->ipAddress = socket_address.sin_addr.s_addr;
 
-        if (list_of_users == NULL)
+        if (user_list_is_empty(list_of_users))
         {
             newUser->nextUser = list_of_users;
             list_of_users = newUser;
         }
         else
         {
-            list_of_users->nextUser = newUser;
+            usersPtr tmp_users = list_of_users; 
+            while (!user_list_is_empty(tmp_users->nextUser)) 
+                tmp_users = tmp_users->nextUser;
+
+            tmp_users->nextUser = newUser;
             newUser->nextUser = NULL;
+            list_of_users = tmp_users;
         }
 
         log_t = OK;
