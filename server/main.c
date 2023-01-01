@@ -195,13 +195,13 @@ int user_list_is_empty(const usersPtr users_list)
 // the new username is valid??
 int new_username_valid(char *new_username)
 {
-    usersPtr __users = list_of_users;
+    usersPtr *__users = &list_of_users;
 
-    while (!user_list_is_empty(__users))
+    while (!user_list_is_empty(*__users))
     {
-        if (strcmp((__users)->username, new_username) == 0)
+        if (strcmp((*__users)->username, new_username) == 0)
             return 0; // This username Exists! So new username is not Valid! it is must be unique
-        __users = (__users)->nextUser;
+        __users = &(*__users)->nextUser;
     }
 
     return 1;
