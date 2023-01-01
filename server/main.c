@@ -44,7 +44,21 @@ typedef struct users {
 typedef  Users* usersPtr;
 
 //initialize the list of users as LinkedList
-usersPtr list_of_users;
+usersPtr list_of_users = NULL;
+
+typedef struct playground {
+    char ground[9];
+    char *player_one;
+    char *player_two;
+    char player_one_char;
+    char player_two_char;
+    struct playground *nextPlayGround;
+} playGround;
+
+typedef playGround *playGroundPtr;
+
+//initialize the playground as LinkedList
+playGroundPtr mainGround = NULL;
 
 void print_welcome_message();
 void setup_server();
