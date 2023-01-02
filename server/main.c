@@ -48,8 +48,8 @@ usersPtr list_of_users = NULL;
 
 typedef struct playground {
     char ground[9];
-    char *player_one;
-    char *player_two;
+    usersPtr player_one;
+    usersPtr player_two;
     char player_one_char;
     char player_two_char;
     unsigned short first_player_points;
