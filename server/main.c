@@ -201,7 +201,7 @@ void insert_user(char *username)
     else
     {
         log_t = ERROR;
-        send(new_socket, LOGIN_STATUS_OK, LOGIN_STATUS_SIZE, 0);
+        send(new_socket, LOGIN_STATUS_FAILED, LOGIN_STATUS_SIZE, 0);
     }
 
     log_t == OK ? log_print(&log_t, username, "Created SuccessFul!") : log_print(&log_t, "Memory is not available for", username, "user creation"); 
