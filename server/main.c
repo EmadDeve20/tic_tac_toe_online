@@ -18,6 +18,7 @@
 #define LOGIN_STATUS_OK "LOGIN OK"
 #define LOGIN_STATUS_FAILED "LOGIN NK"
 #define LOGIN_STATUS_SIZE 9
+#define USERNAME_LENGTH 20
 
 #define LOG_OK_FORMAT               "\033[0;37m[%d-%02d-%02d  %02d:%02d] \033[0;32m%s\n\033[0m"
 #define LOG_WARNING_FORMAT          "\033[0;37m[%d-%02d-%02d  %02d:%02d] \033[0;33m%s\n\033[0m"
@@ -148,6 +149,7 @@ void setup_server()
         if (valread >= 0)
         {
             requests_parser();
+            memset(buffer, '\0', 1024); // clear the buffer
         }    
     }
 }
@@ -175,27 +177,27 @@ void insert_user(char *username)
 {
     usersPtr newUser;
     newUser = malloc(sizeof(Users));
+    newUser->username =  malloc(USERNAME_LENGTH+1);
+    // printf("username is null? %d\n", newUser->username == NULL);
     log_type log_t;
     // is space available and the username is valid
-    if (newUser != NULL && new_username_is_valid(username)) 
+    if ((newUser != NULL && newUser->username != NULL) && new_username_is_valid(username)) 
     {
-        newUser->username = username;
+        newUser->username = strcat(newUser->username, username);
         newUser->ipAddress = socket_address.sin_addr.s_addr;
+        newUser->nextUser = NULL;
 
         if (user_list_is_empty(list_of_users))
         {
-            newUser->nextUser = list_of_users;
             list_of_users = newUser;
         }
         else
         {
-            usersPtr tmp_users = list_of_users; 
-            while (!user_list_is_empty(tmp_users->nextUser)) 
-                tmp_users = tmp_users->nextUser;
+            usersPtr *users = &list_of_users; 
+            while (!user_list_is_empty((*users)->nextUser)) 
+                users = &(*users)->nextUser;
 
-            tmp_users->nextUser = newUser;
-            newUser->nextUser = NULL;
-            list_of_users = tmp_users;
+            (*users)->nextUser = newUser;
         }
 
         log_t = OK;
