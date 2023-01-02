@@ -9,6 +9,8 @@
 #include <time.h>
 #include <stdarg.h>
 
+#define FOREVER 1
+
 #define DEFAULT_PORT 8013
 #define BUFFER_SIZE 1024
 #define LOGIN_REQUEST "LOGIN"
@@ -133,20 +135,21 @@ void setup_server()
         exit(EXIT_FAILURE);
     }
 
-    if ((new_socket = accept(server_fd, (struct sockaddr*)&socket_address, (socklen_t*)&adderlen)) < 0)
+    while (FOREVER)
     {
-        perror("Accept Failed!");
-        exit(EXIT_FAILURE);
+        if ((new_socket = accept(server_fd, (struct sockaddr*)&socket_address, (socklen_t*)&adderlen)) < 0)
+        {
+            perror("Accept Failed!");
+            exit(EXIT_FAILURE);
+        }
+        // printf("%d\n", socket_address.sin_addr.s_addr);
+        valread = read(new_socket, buffer, BUFFER_SIZE);
+
+        if (valread >= 0)
+        {
+            requests_parser();
+        }    
     }
-
-    // printf("%d\n", socket_address.sin_addr.s_addr);
-    valread = read(new_socket, buffer, BUFFER_SIZE);
-
-    if (valread >= 0)
-    {
-        requests_parser();
-    }
-
 }
 
 /*
