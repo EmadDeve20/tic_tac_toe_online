@@ -182,8 +182,9 @@ void insert_user(char *username)
     log_type log_t;
     // is space available and the username is valid
     if ((newUser != NULL && newUser->username != NULL) && new_username_is_valid(username)) 
-    {
-        newUser->username = strcat(newUser->username, username);
+    {   
+        memset(newUser->username, '\0', USERNAME_LENGTH+1); // clear piece of memory for string variable
+        newUser->username = strncat(newUser->username, username, USERNAME_LENGTH);
         newUser->ipAddress = socket_address.sin_addr.s_addr;
         newUser->nextUser = NULL;
 
