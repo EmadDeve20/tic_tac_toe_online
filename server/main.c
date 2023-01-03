@@ -178,7 +178,6 @@ void insert_user(char *username)
     usersPtr newUser;
     newUser = malloc(sizeof(Users));
     newUser->username =  malloc(USERNAME_LENGTH+1);
-    // printf("username is null? %d\n", newUser->username == NULL);
     log_type log_t;
     // is space available and the username is valid
     if ((newUser != NULL && newUser->username != NULL) && new_username_is_valid(username)) 
