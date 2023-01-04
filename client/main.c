@@ -13,8 +13,8 @@
 #define LOGOU_REQUEST_SIZE 7 +  USERNAME_LENGTH
 #define LOGIN_STATUS_OK "LOGIN OK"
 #define LOGIN_STATUS_SIZE 9
-#define LOGIN_REQUEST_FORMAT "LOGIN %s" // LOGIN $username
-#define LOGOUT_REQUEST_FORMAT "LOGOUT %s" // LOGOUT $username
+#define LOGIN_REQUEST_FORMAT "LOGIN %s \r\n" // LOGIN $username
+#define LOGOUT_REQUEST_FORMAT "LOGOUT %s \r\n" // LOGOUT $username
 
 
 int port = 8013, sock = 0, client_fd, valread;
