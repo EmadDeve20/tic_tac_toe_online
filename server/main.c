@@ -33,6 +33,12 @@ typedef enum LogMessageType
     INFO,
 } log_type;
 
+typedef enum Player_status
+{
+    WAITING_FOR_A_PLAYER,
+    PLAYING
+} player_status;
+
 int server_fd, new_socket, valread;
 unsigned int port = DEFAULT_PORT;
 char buffer[1024] = {0};
@@ -41,6 +47,7 @@ struct sockaddr_in socket_address;
 typedef struct users {
     uint32_t ipAddress;
     char *username;
+    player_status p_status;
     struct users* nextUser;
 } Users;
 
@@ -143,7 +150,6 @@ void setup_server()
             perror("Accept Failed!");
             exit(EXIT_FAILURE);
         }
-        // printf("%d\n", socket_address.sin_addr.s_addr);
         valread = read(new_socket, buffer, BUFFER_SIZE);
 
         if (valread >= 0)
@@ -185,6 +191,7 @@ void insert_user(char *username)
         memset(newUser->username, '\0', USERNAME_LENGTH+1); // clear piece of memory for string variable
         newUser->username = strncat(newUser->username, username, USERNAME_LENGTH);
         newUser->ipAddress = socket_address.sin_addr.s_addr;
+        newUser->p_status = WAITING_FOR_A_PLAYER;
         newUser->nextUser = NULL;
 
         if (user_list_is_empty(list_of_users))
