@@ -74,7 +74,7 @@ playGroundPtr mainGround = NULL;
 
 void print_welcome_message();
 void setup_server();
-void requests_parser();
+char** requests_parser();
 void insert_user(char *username);
 int user_list_is_empty(const usersPtr users_list);
 int new_username_is_valid(char *);
@@ -154,7 +154,7 @@ void setup_server()
 
         if (valread >= 0)
         {
-            requests_parser();
+            char **request_parsed = requests_parser();
             memset(buffer, '\0', 1024); // clear the buffer
         }    
     }
@@ -163,16 +163,20 @@ void setup_server()
 /*
 this function parses all of the requests
 */
-void requests_parser()
+char** requests_parser()
 {
     char *string_slice;
     string_slice = strtok(buffer, RESTRICT_PARAS_CHAR);
+    char **sliced = malloc(10 * sizeof(char*));
+    int sliced_idx = 0;
 
-    if (strcmp(string_slice, LOGIN_REQUEST) == 0)
+    while (string_slice != NULL)
     {
+        sliced[sliced_idx] = string_slice;
         string_slice = strtok(NULL, RESTRICT_PARAS_CHAR);
-        insert_user(string_slice);
     }
+
+    return sliced;
 
 }
 
