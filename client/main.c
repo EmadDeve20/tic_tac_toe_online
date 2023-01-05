@@ -93,9 +93,9 @@ void client_setup()
 void game_controller()
 {
 
-    printf("%s\n", try_to_login() ? "LOGIN TO SERVER" : "CAN NOT LOGIN TO SERVER! Maybe Your username is Exist! Try With another name");
+    // printf("%s\n", try_to_login() ? "LOGIN TO SERVER" : "CAN NOT LOGIN TO SERVER! Maybe Your username is Exist! Try With another name");
 
-    game_is_start = 1;
+    try_to_login() ? game_is_start = 1 : exit(EXIT_FAILURE);
 
     while (keep_running)
     {
