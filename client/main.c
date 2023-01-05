@@ -129,7 +129,6 @@ void logout()
 {
     char logout_request[LOGOU_REQUEST_SIZE];
     sprintf(logout_request, LOGOUT_REQUEST_FORMAT, username);
-    puts(logout_request);
     send(sock, logout_request, strlen(logout_request), 0);
 }
 
