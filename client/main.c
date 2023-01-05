@@ -18,7 +18,7 @@
 
 static volatile sig_atomic_t keep_running = 1;
 
-int port = 8013, sock = 0, client_fd, valread;
+int port = 8013, sock = 0, client_fd, valread, game_is_start = 0;
 char server_address[1024];
 char username[USERNAME_LENGTH];
 struct sockaddr_in socket_address;
@@ -95,6 +95,8 @@ void game_controller()
 
     printf("%s\n", try_to_login() ? "LOGIN TO SERVER" : "CAN NOT LOGIN TO SERVER! Maybe Your username is Exist! Try With another name");
 
+    game_is_start = 1;
+
     while (keep_running)
     {
         // SEND and RECEIVE data BETWEEN server and client
@@ -143,7 +145,14 @@ void close_end_of_string(char *text)
 }
 
 void signal_handler(int _)
-{
-    (void)_;
-    keep_running = 0; 
+{   
+    if (game_is_start)
+    {
+        (void)_;
+        keep_running = 0; 
+    }
+    else
+    {
+        exit(_);
+    }
 }
