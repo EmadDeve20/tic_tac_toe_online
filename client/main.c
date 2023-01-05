@@ -4,8 +4,8 @@
 #include <sys/socket.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
 
-#define FOREVER 1
 #define USERNAME_LENGTH 20
 #define LOGIN_REQUEST "LOGIN "
 #define LOGOUT_REQUEST "LOGOUT "
@@ -16,6 +16,7 @@
 #define LOGIN_REQUEST_FORMAT "LOGIN %s \r\n" // LOGIN $username
 #define LOGOUT_REQUEST_FORMAT "LOGOUT %s \r\n" // LOGOUT $username
 
+static volatile sig_atomic_t keep_running = 1;
 
 int port = 8013, sock = 0, client_fd, valread;
 char server_address[1024];
@@ -29,11 +30,12 @@ void game_controller();
 int try_to_login();
 void logout();
 void close_end_of_string(char *text);
+static void signal_handler(int _);
 
 
 int main()
 {
-
+    signal(SIGINT, signal_handler);
     initial_settings();
     client_setup();
     game_controller();
@@ -93,7 +95,7 @@ void game_controller()
 
     printf("%s\n", try_to_login() ? "LOGIN TO SERVER" : "CAN NOT LOGIN TO SERVER! Maybe Your username is Exist! Try With another name");
 
-    while (FOREVER)
+    while (keep_running)
     {
         // SEND and RECEIVE data BETWEEN server and client
     }
@@ -127,6 +129,7 @@ void logout()
 {
     char logout_request[LOGOU_REQUEST_SIZE];
     sprintf(logout_request, LOGOUT_REQUEST_FORMAT, username);
+    puts(logout_request);
     send(sock, logout_request, strlen(logout_request), 0);
 }
 
@@ -138,4 +141,10 @@ void close_end_of_string(char *text)
 
     if ((strlen(text) > 0) && (text[strlen (text) - 1] == '\n'))
         text[strlen (text) - 1] = '\0';
+}
+
+void signal_handler(int _)
+{
+    (void)_;
+    keep_running = 0; 
 }
