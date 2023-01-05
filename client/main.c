@@ -27,6 +27,7 @@ void initial_settings();
 void client_setup();
 int try_to_login();
 void logout();
+void close_end_of_string(char *text);
 
 
 int main()
@@ -111,4 +112,14 @@ void logout()
     char logout_request[LOGOU_REQUEST_SIZE];
     sprintf(logout_request, LOGOUT_REQUEST_FORMAT, username);
     send(sock, logout_request, strlen(logout_request), 0);
+}
+
+/*
+this function is for closing the end of text with a '\0' character
+*/
+void close_end_of_string(char *text)
+{   
+
+    if ((strlen(text) > 0) && (text[strlen (text) - 1] == '\n'))
+        text[strlen (text) - 1] = '\0';
 }
