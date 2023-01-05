@@ -75,6 +75,7 @@ playGroundPtr mainGround = NULL;
 void print_welcome_message();
 void setup_server();
 char** requests_parser();
+void manage_requests(char** request_parsed);
 void insert_user(char *username);
 int user_list_is_empty(const usersPtr users_list);
 int new_username_is_valid(char *);
@@ -155,6 +156,7 @@ void setup_server()
         if (valread >= 0)
         {
             char **request_parsed = requests_parser();
+            manage_requests(request_parsed);
             memset(buffer, '\0', 1024); // clear the buffer
         }    
     }
@@ -171,13 +173,36 @@ char** requests_parser()
     int sliced_idx = 0;
 
     while (string_slice != NULL)
-    {
+    {   
         sliced[sliced_idx] = string_slice;
         string_slice = strtok(NULL, RESTRICT_PARAS_CHAR);
+        sliced_idx++;
     }
 
     return sliced;
 
+}
+
+/*
+Check the parsed request and execute the commands
+*/
+void manage_requests(char** request_parsed)
+{
+    if (strcmp(request_parsed[0], LOGIN_REQUEST) == 0)
+    {   
+        char username[USERNAME_LENGTH] = ""; 
+        for (int index = 1; strcmp(request_parsed[index], "\r\n")!=0; index++)
+        {   
+            if (strlen(username) + strlen(request_parsed[index]) > USERNAME_LENGTH)
+                break;
+
+            strcat(username, request_parsed[index]);
+            
+            if (strcmp(request_parsed[index], "\r\n")!=0)
+                strcat(username, " ");
+        }
+        insert_user(username);
+    }
 }
 
 /*
