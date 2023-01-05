@@ -42,15 +42,17 @@ int main()
 // this is a form for entering username and server details
 void initial_settings()
 {
+    printf("Enter your name: ");
+    fgets(username, USERNAME_LENGTH, stdin);
+    close_end_of_string(username);
     
     printf("Enter Server IP: ");
-    scanf("%1023s", server_address);
+    fgets(server_address, 1024, stdin);
+    close_end_of_string(server_address);
 
     printf("Enter Port Server: ");
     scanf("%d", &port);
     
-    printf("Enter your name: ");
-    scanf("%19s", username);
 
 }
 
