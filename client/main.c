@@ -5,7 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
-
+#define FOREVER 1
 #define USERNAME_LENGTH 20
 #define LOGIN_REQUEST "LOGIN "
 #define LOGOUT_REQUEST "LOGOUT "
@@ -25,6 +25,7 @@ char buffer[1024];
 
 void initial_settings();
 void client_setup();
+void game_controller();
 int try_to_login();
 void logout();
 void close_end_of_string(char *text);
@@ -35,7 +36,8 @@ int main()
 
     initial_settings();
     client_setup();
-    printf("%s\n", try_to_login() ? "LOGIN TO SERVER" : "CAN NOT LOGIN TO SERVER!");
+    game_controller();
+    logout();
 
 }
 
@@ -84,6 +86,18 @@ void client_setup()
         perror("Connection Faild!\n");
         exit(EXIT_FAILURE);
     }
+}
+
+void game_controller()
+{
+
+    printf("%s\n", try_to_login() ? "LOGIN TO SERVER" : "CAN NOT LOGIN TO SERVER! Maybe Your username is Exist! Try With another name");
+
+    while (FOREVER)
+    {
+        // SEND and RECEIVE data BETWEEN server and client
+    }
+
 }
 
 /*
