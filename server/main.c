@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdarg.h>
+#include <signal.h>
 
 #define FOREVER 1
 
@@ -83,22 +84,18 @@ int user_list_is_empty(const usersPtr users_list);
 int new_username_is_valid(char *);
 void chage_port(const char *port);
 void log_print(const log_type *type, const char* message, ...);
+void signal_handler(int EXIT_CODE);
 
 int main(int argc, char **argv)
 {
+
+    signal(SIGINT, signal_handler);
 
     // Check If We Have an Argument, Change the Default Port
     if (argc > 1) chage_port(argv[1]);
 
     print_welcome_message();
     setup_server();
-    
-
-    // closing the connected socket
-    close(new_socket);
-    // closing the listening socket
-    shutdown(server_fd, SHUT_RDWR);
-
 }
 
 void print_welcome_message()
@@ -358,4 +355,18 @@ void log_print(const log_type *type, const char* message, ...)
     }
 
     fflush(stdout);
+}
+
+void signal_handler(int EXIT_CODE)
+{
+    
+    // closing the connected socket
+    close(new_socket);
+    // closing the listening socket
+    shutdown(server_fd, SHUT_RDWR);
+
+    puts("\nSERVER DOWN");
+    fflush(stdout);
+
+    exit(EXIT_CODE);
 }
