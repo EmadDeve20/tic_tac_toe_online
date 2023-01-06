@@ -14,6 +14,7 @@
 #define DEFAULT_PORT 8013
 #define BUFFER_SIZE 1024
 #define LOGIN_REQUEST "LOGIN"
+#define LOGOUT_REQUEST "LOGOUT"
 #define RESTRICT_PARAS_CHAR " " // Actually space character
 #define LOGIN_STATUS_OK "LOGIN OK"
 #define LOGIN_STATUS_FAILED "LOGIN NK"
@@ -193,7 +194,7 @@ void manage_requests(char** request_parsed)
         char username[USERNAME_LENGTH] = ""; 
         for (int index = 1; strcmp(request_parsed[index], "\r\n")!=0; index++)
         {   
-            if (strlen(username) + strlen(request_parsed[index]) > USERNAME_LENGTH)
+            if (strlen(username) + strlen(request_parsed[index]) >= USERNAME_LENGTH)
                 break;
 
             strcat(username, request_parsed[index]);
@@ -202,6 +203,11 @@ void manage_requests(char** request_parsed)
                 strcat(username, " ");
         }
         insert_user(username);
+    }
+
+    if (strcmp(request_parsed[0], LOGOUT_REQUEST) == 0)
+    {
+        // TODO: do delete user
     }
 }
 
