@@ -78,6 +78,7 @@ void setup_server();
 char** requests_parser();
 void manage_requests(char** request_parsed);
 void insert_user(char *username);
+void delete_user(char *username);
 int user_list_is_empty(const usersPtr users_list);
 int new_username_is_valid(char *);
 void chage_port(const char *port);
@@ -254,6 +255,31 @@ void insert_user(char *username)
     log_t == OK ? 
       log_print(&log_t, username, "user successfully created") : 
       log_print(&log_t, "Memory is not available for new user creation or the ", username, " username is exist"); 
+}
+
+/*
+delete a username using his name
+TODO: This function must be tested I am not sure about this function
+*/ 
+void delete_user(char *username)
+{
+    usersPtr *userLists = &list_of_users;
+
+    if (strcmp((*userLists)->username, username) == 0)
+    {
+        usersPtr user_delete = *userLists;
+        userLists = &(*userLists)->nextUser;
+        free(user_delete);
+    }
+    else
+    {
+        while (strcmp((*userLists)->username, username) != 0 && user_list_is_empty((*userLists)->nextUser))
+            userLists = &(*userLists)->nextUser;
+
+        usersPtr user_delete = (*userLists);
+        userLists = &user_delete->nextUser;
+        free(user_delete);
+    }
 }
 
 // list_of_users is Empty??
