@@ -29,7 +29,7 @@ void client_setup();
 void game_controller();
 int try_to_login();
 void logout();
-void close_end_of_string(char *text);
+inline void close_end_of_string(char *text);
 static void signal_handler(int _);
 
 
@@ -137,7 +137,7 @@ void logout()
 /*
 this function is for closing the end of text with a '\0' character
 */
-void close_end_of_string(char *text)
+inline void close_end_of_string(char *text)
 {   
 
     if ((strlen(text) > 0) && (text[strlen (text) - 1] == '\n'))
