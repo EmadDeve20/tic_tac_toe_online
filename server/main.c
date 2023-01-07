@@ -22,6 +22,7 @@
 #define LOGIN_STATUS_FAILED "LOGIN NK"
 #define LOGIN_STATUS_SIZE 9
 #define USERNAME_LENGTH 20
+#define GROUND_SIZE 9
 
 #define LOG_OK_FORMAT               "\033[0;37m[%d-%02d-%02d  %02d:%02d] \033[0;32m%s\n\033[0m"
 #define LOG_WARNING_FORMAT          "\033[0;37m[%d-%02d-%02d  %02d:%02d] \033[0;33m%s\n\033[0m"
@@ -60,7 +61,7 @@ typedef  Users* usersPtr;
 usersPtr list_of_users = NULL;
 
 typedef struct playground {
-    char ground[9];
+    char ground[GROUND_SIZE];
     usersPtr player_one;
     usersPtr player_two;
     char player_one_char;
@@ -81,6 +82,7 @@ char** requests_parser();
 void manage_requests(char** request_parsed);
 void insert_user(char *username);
 void delete_user(char *username);
+void create_a_playfround(const usersPtr player1, const usersPtr player2);
 int new_username_is_valid(char *);
 void chage_port(const char *port);
 void log_print(const log_type *type, const char* message, ...);
@@ -279,6 +281,25 @@ void delete_user(char *username)
     }
 }
 
+//TODO: test this function
+//TODO: add logs for this
+void create_a_playfround(const usersPtr player1, const usersPtr player2)
+{
+    playGroundPtr new_playground;
+    new_playground = malloc(sizeof(playGround));
+
+    if (new_playground != NULL)
+    {
+        new_playground->player_one = player1;
+        new_playground->player_two = player2;
+        new_playground->player_one_char =  rand() % 2 ? 'X' : 'O';
+        new_playground->player_two_char =  new_playground->player_one_char == 'O' ? 'X' : 'O';
+        new_playground->first_player_points = new_playground->secound_player_points = 0; 
+        new_playground->nextPlayGround = mainGround;
+        mainGround = new_playground;
+    }
+
+}
 
 // the new username is valid??
 int new_username_is_valid(char *new_username)
