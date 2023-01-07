@@ -10,6 +10,7 @@
 #include <stdarg.h>
 #include <signal.h>
 
+#define IS_EMPTY(X) ((X) == NULL)
 #define FOREVER 1
 
 #define DEFAULT_PORT 8013
@@ -80,7 +81,6 @@ char** requests_parser();
 void manage_requests(char** request_parsed);
 void insert_user(char *username);
 void delete_user(char *username);
-int user_list_is_empty(const usersPtr users_list);
 int new_username_is_valid(char *);
 void chage_port(const char *port);
 void log_print(const log_type *type, const char* message, ...);
@@ -227,14 +227,14 @@ void insert_user(char *username)
         newUser->p_status = WAITING_FOR_A_PLAYER;
         newUser->nextUser = NULL;
 
-        if (user_list_is_empty(list_of_users))
+        if (IS_EMPTY(list_of_users))
         {
             list_of_users = newUser;
         }
         else
         {
             usersPtr *users = &list_of_users; 
-            while (!user_list_is_empty((*users)->nextUser)) 
+            while (!IS_EMPTY((*users)->nextUser)) 
                 users = &(*users)->nextUser;
 
             (*users)->nextUser = newUser;
@@ -270,7 +270,7 @@ void delete_user(char *username)
     }
     else
     {
-        while (strcmp((*userLists)->username, username) != 0 && user_list_is_empty((*userLists)->nextUser))
+        while (strcmp((*userLists)->username, username) != 0 && !IS_EMPTY((*userLists)->nextUser))
             userLists = &(*userLists)->nextUser;
 
         usersPtr user_delete = (*userLists);
@@ -279,18 +279,13 @@ void delete_user(char *username)
     }
 }
 
-// list_of_users is Empty??
-int user_list_is_empty(const usersPtr users_list)
-{
-    return users_list == NULL;
-}
 
 // the new username is valid??
 int new_username_is_valid(char *new_username)
 {
     usersPtr *__users = &list_of_users;
 
-    while (!user_list_is_empty(*__users))
+    while (!IS_EMPTY(*__users))
     {
         if (strcmp((*__users)->username, new_username) == 0)
             return 0; // This username Exists! So new username is not Valid! it is must be unique
