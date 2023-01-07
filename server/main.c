@@ -82,7 +82,7 @@ char** requests_parser();
 void manage_requests(char** request_parsed);
 void insert_user(char *username);
 void delete_user(char *username);
-void create_a_playfround(const usersPtr player1, const usersPtr player2);
+void create_a_playground(const usersPtr player1, const usersPtr player2);
 int new_username_is_valid(char *);
 void chage_port(const char *port);
 void log_print(const log_type *type, const char* message, ...);
@@ -285,7 +285,7 @@ void delete_user(char *username)
 
 //TODO: test this function
 //TODO: add logs for this
-void create_a_playfround(const usersPtr player1, const usersPtr player2)
+void create_a_playground(const usersPtr player1, const usersPtr player2)
 {
     playGroundPtr new_playground;
     new_playground = malloc(sizeof(playGround));
