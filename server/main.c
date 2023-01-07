@@ -91,6 +91,8 @@ void signal_handler(int EXIT_CODE);
 int main(int argc, char **argv)
 {
 
+    srand(time(NULL));
+
     signal(SIGINT, signal_handler);
 
     // Check If We Have an Argument, Change the Default Port
