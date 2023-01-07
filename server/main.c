@@ -274,7 +274,7 @@ void delete_user(char *username)
             userLists = &(*userLists)->nextUser;
 
         usersPtr user_delete = (*userLists);
-        userLists = &user_delete->nextUser;
+        (*userLists)->nextUser = user_delete->nextUser;
         free(user_delete);
     }
 }
