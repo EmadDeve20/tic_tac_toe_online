@@ -292,6 +292,7 @@ void create_a_playground(const usersPtr player1, const usersPtr player2)
 
     if (new_playground != NULL)
     {
+        memset(new_playground->ground, '-', GROUND_SIZE);
         new_playground->player_one = player1;
         new_playground->player_two = player2;
         new_playground->player_one_char =  rand() % 2 ? 'X' : 'O';
