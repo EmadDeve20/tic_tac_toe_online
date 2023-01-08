@@ -15,6 +15,8 @@
 #define LOGIN_STATUS_SIZE 9
 #define LOGIN_REQUEST_FORMAT "LOGIN %s \r\n" // LOGIN $username
 #define LOGOUT_REQUEST_FORMAT "LOGOUT %s \r\n" // LOGOUT $username
+#define FIND_PLAYER_REQUEST_FORMAT "FIND %s \r\n" // FIND $username 
+#define FIND_PLAYER_REQUEST_LENGTH 29
 
 static volatile sig_atomic_t keep_running = 1;
 
@@ -28,8 +30,9 @@ void initial_settings();
 void client_setup();
 void game_controller();
 int try_to_login();
+void request_to_find_a_player();
 void logout();
-inline void close_end_of_string(char *text);
+void close_end_of_string(char *text);
 static void signal_handler(int _);
 
 
@@ -124,6 +127,13 @@ int try_to_login()
     return 0;
 }
 
+void request_to_find_a_player()
+{
+    char find_request[FIND_PLAYER_REQUEST_LENGTH];
+    sprintf(find_request, FIND_PLAYER_REQUEST_FORMAT, username);
+    send(sock, find_request, strlen(find_request), 0);
+}
+
 /*
 send logout request 
 */
@@ -137,7 +147,7 @@ void logout()
 /*
 this function is for closing the end of text with a '\0' character
 */
-inline void close_end_of_string(char *text)
+void close_end_of_string(char *text)
 {   
 
     if ((strlen(text) > 0) && (text[strlen (text) - 1] == '\n'))
