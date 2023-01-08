@@ -83,6 +83,7 @@ void manage_requests(char** request_parsed);
 void insert_user(char *username);
 void delete_user(char *username);
 void create_a_playground(const usersPtr player1, const usersPtr player2);
+void delete_playground(const usersPtr user);
 int new_username_is_valid(char *);
 void chage_port(const char *port);
 void log_print(const log_type *type, const char* message, ...);
@@ -302,6 +303,26 @@ void create_a_playground(const usersPtr player1, const usersPtr player2)
         mainGround = new_playground;
     }
 
+}
+
+//TODO: Do test this function
+void delete_playground(const usersPtr user)
+{
+    playGroundPtr *pg = &mainGround;
+
+    while (!IS_EMPTY(*pg))
+    {
+        if (((strcmp((*pg)->player_one->username, user->username) == 0) && user->ipAddress == (*pg)->player_one->ipAddress)
+        || ((strcmp((*pg)->player_two->username, user->username) == 0) && user->ipAddress == (*pg)->player_two->ipAddress))
+        {
+            playGroundPtr delete_pg = *pg;
+            (*pg)->nextPlayGround = delete_pg->nextPlayGround;
+            free(delete_pg);
+            break;
+        }
+        else
+            pg = &(*pg)->nextPlayGround;
+    }
 }
 
 // the new username is valid??
