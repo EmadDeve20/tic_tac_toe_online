@@ -88,6 +88,7 @@ int new_username_is_valid(char *);
 void chage_port(const char *port);
 void log_print(const log_type *type, const char* message, ...);
 void signal_handler(int EXIT_CODE);
+void perform_player_selection(const char *username_1, const unsigned short select, const char *username_2);
 
 int main(int argc, char **argv)
 {
@@ -323,6 +324,34 @@ void delete_playground(const usersPtr user)
         else
             pg = &(*pg)->nextPlayGround;
     }
+}
+
+//TODO: do test this function
+//TODO: if the user choice is not valid! send a good message to his user and send message.
+void perform_player_selection(const char *username_1, const unsigned short select, const char *username_2)
+{
+    playGroundPtr* pg = &mainGround;
+
+    while (!IS_EMPTY(*pg))
+    {
+        if ((strcmp((*pg)->player_one->username, username_1) == 0) && (strcmp((*pg)->player_two->username, username_2) == 0))
+        {
+            if ((*pg)->ground[select] == '-')
+                (*pg)->ground[select] = (*pg)->player_one_char;
+            break;
+        }
+        else if((strcmp((*pg)->player_one->username, username_2) == 0) && (strcmp((*pg)->player_two->username, username_1) == 0))
+        {
+            if ((*pg)->ground[select] == '-')
+                (*pg)->ground[select] = (*pg)->player_two_char;
+            break;
+        }
+        else
+        {
+            pg = &(*pg)->nextPlayGround;
+        }
+    }
+
 }
 
 // the new username is valid??
