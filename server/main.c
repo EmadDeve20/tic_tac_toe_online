@@ -17,6 +17,7 @@
 #define BUFFER_SIZE 1024
 #define LOGIN_REQUEST "LOGIN"
 #define LOGOUT_REQUEST "LOGOUT"
+#define FIND_PLAYER_REQUEST "FIND"
 #define RESTRICT_PARAS_CHAR " " // Actually space character
 #define LOGIN_STATUS_OK "LOGIN OK"
 #define LOGIN_STATUS_FAILED "LOGIN NK"
