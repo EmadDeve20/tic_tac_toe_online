@@ -84,6 +84,7 @@ char** requests_parser();
 void manage_requests(char** request_parsed);
 void insert_user(char *username);
 void delete_user(char *username);
+char* find_a_player(const char *us_req);
 void create_a_playground(const usersPtr player1, const usersPtr player2);
 void delete_playground(const usersPtr user);
 int new_username_is_valid(char *);
@@ -290,6 +291,50 @@ void delete_user(char *username)
         (*userLists)->nextUser = user_delete->nextUser;
         free(user_delete);
     }
+}
+
+/*
+This function try to find a player
+@return competitor's name
+*/
+char* find_a_player(const char *us_req)
+{
+    char *username = {0};
+    usersPtr *__users = &list_of_users;
+    usersPtr player1 = NULL, player2 = NULL;
+
+    while (!IS_EMPTY(*__users))
+    {
+        if ((*__users)->p_status == WAITING_FOR_A_PLAYER && (strcmp((*__users)->username, us_req)))
+        {
+            player2 = *__users;
+            player2->p_status = PLAYING;
+        }
+        if (strcmp((*__users)->username, us_req) == 0)
+        {
+            if ((*__users)->p_status != PLAYING)
+            {
+                player1 = *__users;
+                player1->p_status = PLAYING;
+            }
+            else
+            {
+                break;
+            }
+        }
+        if (!IS_EMPTY(player1) && !IS_EMPTY(player2) && (player1->p_status == PLAYING && player2->p_status == PLAYING))
+            break;
+
+        __users = &(*__users)->nextUser; 
+    }
+
+    if (!IS_EMPTY(player1) && !IS_EMPTY(player2) && (player1->p_status == PLAYING && player2->p_status == PLAYING))
+    {
+        username = player2->username;
+        create_a_playground(player1, player2);
+    }
+
+    return username;
 }
 
 //TODO: test this function
