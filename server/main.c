@@ -24,6 +24,7 @@
 #define LOGIN_STATUS_SIZE 9
 #define USERNAME_LENGTH 20
 #define GROUND_SIZE 9
+#define FINAL_SCORE 5
 
 #define LOG_OK_FORMAT               "\033[0;37m[%d-%02d-%02d  %02d:%02d] \033[0;32m%s\n\033[0m"
 #define LOG_WARNING_FORMAT          "\033[0;37m[%d-%02d-%02d  %02d:%02d] \033[0;33m%s\n\033[0m"
@@ -90,6 +91,7 @@ void chage_port(const char *port);
 void log_print(const log_type *type, const char* message, ...);
 void signal_handler(int EXIT_CODE);
 void perform_player_selection(const char *username_1, const unsigned short select, const char *username_2);
+int check_who_is_winner(playGroundPtr pg);
 
 int main(int argc, char **argv)
 {
@@ -353,6 +355,167 @@ void perform_player_selection(const char *username_1, const unsigned short selec
         }
     }
 
+}
+
+int check_who_is_winner(playGroundPtr pg)
+{
+    // Check lines
+    if ((pg->ground[0] == pg->ground[1]) && pg->ground[2] == pg->ground[0])
+    {
+        if (pg->ground[0] == 'X')
+        {
+            if (pg->player_one_char == 'X')
+                pg->first_player_points++;
+            else
+                pg->secound_player_points++;
+        }
+        else
+        {
+            if (pg->player_one_char == 'O')
+                pg->first_player_points++;
+            else
+                pg->secound_player_points++;
+        }
+    }
+
+    if ((pg->ground[3] == pg->ground[4]) && pg->ground[5] == pg->ground[3])
+    {
+        if (pg->ground[3] == 'X')
+        {
+            if (pg->player_one_char == 'X')
+                pg->first_player_points++;
+            else
+                pg->secound_player_points++;
+        }
+        else
+        {
+            if (pg->player_one_char == 'O')
+                pg->first_player_points++;
+            else
+                pg->secound_player_points++;
+        }
+    }
+
+    if ((pg->ground[6] == pg->ground[7]) && pg->ground[8] == pg->ground[6])
+    {
+        if (pg->ground[6] == 'X')
+        {
+            if (pg->player_one_char == 'X')
+                pg->first_player_points++;
+            else
+                pg->secound_player_points++;
+        }
+        else
+        {
+            if (pg->player_one_char == 'O')
+                pg->first_player_points++;
+            else
+                pg->secound_player_points++;
+        }
+    }
+
+    //Check columns
+
+    if ((pg->ground[0] == pg->ground[3]) && pg->ground[6] == pg->ground[0])
+    {
+        if (pg->ground[6] == 'X')
+        {
+            if (pg->player_one_char == 'X')
+                pg->first_player_points++;
+            else
+                pg->secound_player_points++;
+        }
+        else
+        {
+            if (pg->player_one_char == 'O')
+                pg->first_player_points++;
+            else
+                pg->secound_player_points++;
+        }
+    }
+
+    if ((pg->ground[1] == pg->ground[4]) && pg->ground[7] == pg->ground[1])
+    {
+        if (pg->ground[1] == 'X')
+        {
+            if (pg->player_one_char == 'X')
+                pg->first_player_points++;
+            else
+                pg->secound_player_points++;
+        }
+        else
+        {
+            if (pg->player_one_char == 'O')
+                pg->first_player_points++;
+            else
+                pg->secound_player_points++;
+        }
+    }
+
+    if ((pg->ground[2] == pg->ground[5]) && pg->ground[8] == pg->ground[2])
+    {
+        if (pg->ground[2] == 'X')
+        {
+            if (pg->player_one_char == 'X')
+                pg->first_player_points++;
+            else
+                pg->secound_player_points++;
+        }
+        else
+        {
+            if (pg->player_one_char == 'O')
+                pg->first_player_points++;
+            else
+                pg->secound_player_points++;
+        }
+    }
+    
+    // Check diameters
+
+    if ((pg->ground[2] == pg->ground[4]) && pg->ground[6] == pg->ground[2])
+    {
+        if (pg->ground[2] == 'X')
+        {
+            if (pg->player_one_char == 'X')
+                pg->first_player_points++;
+            else
+                pg->secound_player_points++;
+        }
+        else
+        {
+            if (pg->player_one_char == 'O')
+                pg->first_player_points++;
+            else
+                pg->secound_player_points++;
+        }
+    }
+
+    if ((pg->ground[0] == pg->ground[4]) && pg->ground[8] == pg->ground[0])
+    {
+        if (pg->ground[0] == 'X')
+        {
+            if (pg->player_one_char == 'X')
+                pg->first_player_points++;
+            else
+                pg->secound_player_points++;
+        }
+        else
+        {
+            if (pg->player_one_char == 'O')
+                pg->first_player_points++;
+            else
+                pg->secound_player_points++;
+        }
+    }
+
+    int winner = 0;
+    
+    if (pg->first_player_points >= FINAL_SCORE)
+        winner = 1;
+    if (pg->secound_player_points >= FINAL_SCORE)
+        winner = 2;
+
+    return 0;
 }
 
 // the new username is valid??
