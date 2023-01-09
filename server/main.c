@@ -216,6 +216,10 @@ void manage_requests(char** request_parsed)
     {
         // TODO: do delete user
     }
+    if (strcmp(request_parsed[0], FIND_PLAYER_REQUEST) == 0)
+    {
+        // TODO: do something
+    }
 }
 
 /*
