@@ -100,6 +100,8 @@ void game_controller()
 
     try_to_login() ? game_is_start = 1 : exit(EXIT_FAILURE);
 
+    request_to_find_a_player();
+
     while (keep_running)
     {
         // SEND and RECEIVE data BETWEEN server and client
