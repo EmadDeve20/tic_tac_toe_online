@@ -96,6 +96,7 @@ void signal_handler(int EXIT_CODE);
 void perform_player_selection(const char *username_1, const unsigned short select, const char *username_2);
 int check_who_is_winner(playGroundPtr pg);
 void send_playground_data(const playGroundPtr pg);
+int reset_playground(playGroundPtr pg);
 
 int main(int argc, char **argv)
 {
@@ -589,6 +590,25 @@ void send_playground_data(const playGroundPtr pg)
     
     send(pg->player_one->ipAddress, playground_data_one, data_length, 0);
     send(pg->player_two->ipAddress, playground_data_two, data_length, 0);
+}
+
+int reset_playground(playGroundPtr pg)
+{
+    short number_of_games_played = 0; 
+
+    for (int i = 0; i < GROUND_SIZE; i++)
+    {
+        if (pg->ground[i] != '-')
+            number_of_games_played++;
+    }
+
+    if (number_of_games_played > GROUND_SIZE)
+    {
+        memset(pg->ground, '-', GROUND_SIZE);
+        return 1;
+    }
+
+    return 0;
 }
 
 // the new username is valid??
