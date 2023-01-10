@@ -410,7 +410,8 @@ void perform_player_selection(const char *username_1, const unsigned short selec
     }
 
     check_who_is_winner(*pg);
-
+    reset_playground(*pg);
+    send_playground_data(*pg);
 }
 
 int check_who_is_winner(playGroundPtr pg)
