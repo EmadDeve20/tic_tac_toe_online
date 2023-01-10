@@ -31,6 +31,8 @@
 #define LOG_ERROR_FORMAT            "\033[0;37m[%d-%02d-%02d  %02d:%02d] \033[0;31m%s\n\033[0m"
 #define LOG_INFO_FORMAT             "\033[0;37m[%d-%02d-%02d  %02d:%02d] \033[0;34m%s\n\033[0m"
 
+#define PLAYGROUND_FORMAT           "%s %s %s %d %d \r\n"
+
 typedef enum LogMessageType
 {
     OK,
@@ -93,6 +95,7 @@ void log_print(const log_type *type, const char* message, ...);
 void signal_handler(int EXIT_CODE);
 void perform_player_selection(const char *username_1, const unsigned short select, const char *username_2);
 int check_who_is_winner(playGroundPtr pg);
+void send_playground_data(const playGroundPtr pg);
 
 int main(int argc, char **argv)
 {
@@ -568,6 +571,24 @@ int check_who_is_winner(playGroundPtr pg)
         winner = 2;
 
     return 0;
+}
+
+//TODO: I must test this Function!
+void send_playground_data(const playGroundPtr pg)
+{
+    int data_length = USERNAME_LENGTH*2 + GROUND_SIZE + 10;
+
+    char playground_data_one[data_length];
+    char playground_data_two[data_length];
+
+    sprintf(playground_data_one, PLAYGROUND_FORMAT, pg->player_one->username, pg->player_two->username, 
+        pg->ground, pg->first_player_points, pg->secound_player_points);
+    
+    sprintf(playground_data_one, PLAYGROUND_FORMAT, pg->player_two->username, pg->player_one->username, 
+        pg->ground, pg->secound_player_points, pg->first_player_points);
+    
+    send(pg->player_one->ipAddress, playground_data_one, data_length, 0);
+    send(pg->player_two->ipAddress, playground_data_two, data_length, 0);
 }
 
 // the new username is valid??
