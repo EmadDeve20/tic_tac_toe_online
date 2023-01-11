@@ -17,12 +17,15 @@
 #define LOGOUT_REQUEST_FORMAT "LOGOUT %s \r\n" // LOGOUT $username
 #define FIND_PLAYER_REQUEST_FORMAT "FIND %s \r\n" // FIND $username 
 #define FIND_PLAYER_REQUEST_LENGTH 29
+#define SELECT_REQUEST_FORMAT "SELECT %s %c %s \r\n" // SELECT $username $select $competitor
+#define SELECT_REQUEST_LENGTH ((USERNAME_LENGTH*2) + 20)
 
 static volatile sig_atomic_t keep_running = 1;
 
 int port = 8013, sock = 0, client_fd, valread, game_is_start = 0;
 char server_address[1024];
 char username[USERNAME_LENGTH];
+char competitor[USERNAME_LENGTH];
 struct sockaddr_in socket_address;
 char buffer[1024];
 
@@ -33,6 +36,7 @@ int try_to_login();
 void request_to_find_a_player();
 void logout();
 void close_end_of_string(char *text);
+int select_player_request(const char select);
 static void signal_handler(int _);
 
 
@@ -144,6 +148,14 @@ void logout()
     char logout_request[LOGOU_REQUEST_SIZE];
     sprintf(logout_request, LOGOUT_REQUEST_FORMAT, username);
     send(sock, logout_request, strlen(logout_request), 0);
+}
+
+int select_player_request(const char select)
+{
+    char select_request[SELECT_REQUEST_LENGTH];
+    sprintf(select_request, SELECT_REQUEST_FORMAT, username, select, competitor);
+    
+    return (send(sock, select_request, SELECT_REQUEST_LENGTH, 0) == -1) ? 0 : 1;
 }
 
 /*
