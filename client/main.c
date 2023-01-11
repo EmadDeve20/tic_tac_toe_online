@@ -6,9 +6,12 @@
 #include <unistd.h>
 #include <signal.h>
 
+#define BUFFER_SIZE 1024
 #define USERNAME_LENGTH 20
+#define RESTRICT_PARAS_CHAR " " // Actually space character
 #define LOGIN_REQUEST "LOGIN"
 #define LOGOUT_REQUEST "LOGOUT"
+#define PLAYGROUND_RESPONSE "PLAYGROUND"
 #define LOGIN_REQUEST_SIZE  9 + USERNAME_LENGTH
 #define LOGOU_REQUEST_SIZE 10 +  USERNAME_LENGTH
 #define LOGIN_STATUS_OK "LOGIN OK"
@@ -27,7 +30,7 @@ char server_address[1024];
 char username[USERNAME_LENGTH];
 char competitor[USERNAME_LENGTH];
 struct sockaddr_in socket_address;
-char buffer[1024];
+char buffer[BUFFER_SIZE];
 
 void initial_settings();
 void client_setup();
@@ -37,6 +40,7 @@ void request_to_find_a_player();
 void logout();
 void close_end_of_string(char *text);
 int select_player_request(const char select);
+char** response_parser();
 static void signal_handler(int _);
 
 
@@ -156,6 +160,25 @@ int select_player_request(const char select)
     sprintf(select_request, SELECT_REQUEST_FORMAT, username, select, competitor);
     
     return (send(sock, select_request, SELECT_REQUEST_LENGTH, 0) == -1) ? 0 : 1;
+}
+
+char** response_parser()
+{
+    char *response_slice; 
+    char **parsed = malloc(10 * sizeof(char*));
+
+    response_slice = strtok(buffer, RESTRICT_PARAS_CHAR);
+
+    int parsed_idx = 0;
+
+    while ((response_slice != NULL) && parsed_idx < 10)
+    {
+        parsed[parsed_idx] = response_slice;
+        response_slice = strtok(NULL, RESTRICT_PARAS_CHAR);
+        parsed_idx++;
+    }
+
+    return parsed; 
 }
 
 /*
