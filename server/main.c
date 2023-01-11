@@ -323,7 +323,8 @@ char* find_a_player(const char *us_req)
             }
             else
             {
-                player2->p_status = WAITING_FOR_A_PLAYER;
+                if (!IS_EMPTY(player2))
+                    player2->p_status = WAITING_FOR_A_PLAYER;
                 break;
             }
         }
