@@ -31,7 +31,8 @@
 #define LOG_ERROR_FORMAT            "\033[0;37m[%d-%02d-%02d  %02d:%02d] \033[0;31m%s\n\033[0m"
 #define LOG_INFO_FORMAT             "\033[0;37m[%d-%02d-%02d  %02d:%02d] \033[0;34m%s\n\033[0m"
 
-#define PLAYGROUND_FORMAT           "%s %s %s %d %d \r\n"
+#define PLAYGROUND_FORMAT           "PLAYGROUND %s %s %s %d %d \r\n"
+#define PLAYGROUND_RESPONSE_SIZE ((USERNAME_LENGTH*2) + GROUND_SIZE + 30) 
 
 typedef enum LogMessageType
 {
@@ -579,10 +580,9 @@ int check_who_is_winner(playGroundPtr pg)
 //TODO: I must test this Function!
 void send_playground_data(const playGroundPtr pg)
 {
-    int data_length = USERNAME_LENGTH*2 + GROUND_SIZE + 10;
 
-    char playground_data_one[data_length];
-    char playground_data_two[data_length];
+    char playground_data_one[PLAYGROUND_RESPONSE_SIZE];
+    char playground_data_two[PLAYGROUND_RESPONSE_SIZE];
 
     sprintf(playground_data_one, PLAYGROUND_FORMAT, pg->player_one->username, pg->player_two->username, 
         pg->ground, pg->first_player_points, pg->secound_player_points);
@@ -590,8 +590,8 @@ void send_playground_data(const playGroundPtr pg)
     sprintf(playground_data_one, PLAYGROUND_FORMAT, pg->player_two->username, pg->player_one->username, 
         pg->ground, pg->secound_player_points, pg->first_player_points);
     
-    send(pg->player_one->ipAddress, playground_data_one, data_length, 0);
-    send(pg->player_two->ipAddress, playground_data_two, data_length, 0);
+    send(pg->player_one->ipAddress, playground_data_one, PLAYGROUND_RESPONSE_SIZE, 0);
+    send(pg->player_two->ipAddress, playground_data_two, PLAYGROUND_RESPONSE_SIZE, 0);
 }
 
 int reset_playground(playGroundPtr pg)
