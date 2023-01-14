@@ -5,6 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
+#include <ctype.h>
 
 #define BUFFER_SIZE 1024
 #define USERNAME_LENGTH 20
@@ -40,6 +41,7 @@ void request_to_find_a_player();
 void logout();
 void close_end_of_string(char *text);
 int select_player_request(const char select);
+char selected_number();
 char** response_parser();
 static void signal_handler(int _);
 
@@ -160,6 +162,15 @@ int select_player_request(const char select)
     sprintf(select_request, SELECT_REQUEST_FORMAT, username, select, competitor);
     
     return (send(sock, select_request, SELECT_REQUEST_LENGTH, 0) == -1) ? 0 : 1;
+}
+
+char selected_number()
+{
+    char s;
+
+    while (!isdigit((s = getc(stdin))));
+
+    return s;
 }
 
 char** response_parser()
