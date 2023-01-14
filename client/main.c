@@ -202,7 +202,8 @@ void response_manager(char **response_parsed)
 {
     if (strcmp(PLAYGROUND_RESPONSE, response_parsed[0]) == 0)
     {
-        // do something!
+        save_playground_status(response_parsed[1], response_parsed[2], response_parsed[3],
+        atoi(response_parsed[4]), atoi(response_parsed[5]));
     }
 }
 
