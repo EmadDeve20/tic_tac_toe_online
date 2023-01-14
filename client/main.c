@@ -23,6 +23,7 @@
 #define FIND_PLAYER_REQUEST_LENGTH 29
 #define SELECT_REQUEST_FORMAT "SELECT %s %c %s \r\n" // SELECT $username $select $competitor
 #define SELECT_REQUEST_LENGTH ((USERNAME_LENGTH*2) + 20)
+#define PLAYGROUND_SIZE 9
 
 static volatile sig_atomic_t keep_running = 1;
 
@@ -30,6 +31,7 @@ int port = 8013, sock = 0, client_fd, valread, game_is_start = 0;
 char server_address[1024];
 char username[USERNAME_LENGTH];
 char competitor[USERNAME_LENGTH];
+char playground[PLAYGROUND_SIZE];
 struct sockaddr_in socket_address;
 char buffer[BUFFER_SIZE];
 
