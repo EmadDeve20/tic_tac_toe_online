@@ -43,6 +43,7 @@ void close_end_of_string(char *text);
 int select_player_request(const char select);
 char selected_number();
 char** response_parser();
+void response_manager(char **response_parsed);
 static void signal_handler(int _);
 
 
@@ -190,6 +191,14 @@ char** response_parser()
     }
 
     return parsed; 
+}
+
+void response_manager(char **response_parsed)
+{
+    if (strcmp(PLAYGROUND_RESPONSE, response_parsed[0]) == 0)
+    {
+        // do something!
+    }
 }
 
 /*
