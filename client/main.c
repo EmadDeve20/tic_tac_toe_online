@@ -24,7 +24,7 @@
 #define SELECT_REQUEST_FORMAT "SELECT %s %c %s \r\n" // SELECT $username $select $competitor
 #define SELECT_REQUEST_LENGTH ((USERNAME_LENGTH*2) + 20)
 #define PLAYGROUND_SIZE 9
-#define CLEAR_SCREEN printf("\e[1;1H\e[2J");
+#define CLEAR_SCREEN system("clear");
 
 static volatile sig_atomic_t keep_running = 1;
 
