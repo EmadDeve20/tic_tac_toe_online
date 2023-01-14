@@ -49,6 +49,8 @@ char** response_parser();
 void response_manager(char **response_parsed);
 void save_playground_status(const char *player, const char *competitor_name, const char playground_cp[PLAYGROUND_SIZE],
     unsigned short user_pt, unsigned short competitor_ps);
+
+void draw_playground();
 static void signal_handler(int _);
 
 
@@ -228,6 +230,21 @@ unsigned short user_pt, unsigned short competitor_ps)
 
 }
 
+void draw_playground()
+{
+    printf("%s: %d\t\t\t%s: %d\n\n\n", username, user_points, competitor, competitor_points);
+    
+    for (int i = 0; i < PLAYGROUND_SIZE; i++)
+    {
+        printf("%c \n", playground[i]);
+        
+        if ((i + 1) % 3 == 0)
+            printf("\n");
+
+    }
+
+    fflush(stdout);
+}
 
 /*
 this function is for closing the end of text with a '\0' character
