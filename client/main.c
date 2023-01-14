@@ -47,7 +47,8 @@ int select_player_request(const char select);
 char selected_number();
 char** response_parser();
 void response_manager(char **response_parsed);
-void save_playground_status(const char *competitor_name);
+void save_playground_status(const char *player, const char *competitor_name, const char playground_cp[PLAYGROUND_SIZE],
+    unsigned short user_pt, unsigned short competitor_ps);
 static void signal_handler(int _);
 
 
@@ -205,11 +206,27 @@ void response_manager(char **response_parsed)
     }
 }
 
-void save_playground_status(const char *competitor_name)
+void save_playground_status(const char *player, const char *competitor_name, const char playground_cp[PLAYGROUND_SIZE], 
+unsigned short user_pt, unsigned short competitor_ps)
 {
+
+    if ((strncmp(username, player, USERNAME_LENGTH)) != 0)
+        return;
+
     if (strlen(competitor) == 0)
         strncat(competitor, competitor_name, USERNAME_LENGTH);
+
+    if (strlen(playground) == 0)
+        strncat(playground, playground_cp, PLAYGROUND_SIZE);
+    
+    if (user_points != user_pt)
+        user_points = user_pt;
+    
+    if (competitor_ps != competitor_points)
+        competitor_points = competitor_ps;
+
 }
+
 
 /*
 this function is for closing the end of text with a '\0' character
