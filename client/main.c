@@ -34,6 +34,7 @@ char competitor[USERNAME_LENGTH];
 char playground[PLAYGROUND_SIZE];
 struct sockaddr_in socket_address;
 char buffer[BUFFER_SIZE];
+unsigned short user_points, competitor_points; 
 
 void initial_settings();
 void client_setup();
