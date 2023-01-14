@@ -44,6 +44,7 @@ int select_player_request(const char select);
 char selected_number();
 char** response_parser();
 void response_manager(char **response_parsed);
+void save_playground_status(const char *competitor_name);
 static void signal_handler(int _);
 
 
@@ -199,6 +200,12 @@ void response_manager(char **response_parsed)
     {
         // do something!
     }
+}
+
+void save_playground_status(const char *competitor_name)
+{
+    if (strlen(competitor) == 0)
+        strncat(competitor, competitor_name, USERNAME_LENGTH);
 }
 
 /*
