@@ -496,6 +496,13 @@ void delete_playground(const usersPtr user)
         {
             playGroundPtr delete_pg = *pg;
             (*pg)->nextPlayGround = delete_pg->nextPlayGround;
+
+            if (!IS_EMPTY(delete_pg->player_one))
+                delete_pg->player_one->p_status = WAITING_FOR_A_PLAYER;
+            
+            if (!IS_EMPTY(delete_pg->player_two))
+                delete_pg->player_two->p_status = WAITING_FOR_A_PLAYER;
+
             free(delete_pg);
             break;
         }
