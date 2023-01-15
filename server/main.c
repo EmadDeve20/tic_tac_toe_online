@@ -9,6 +9,8 @@
 #include <time.h>
 #include <stdarg.h>
 #include <signal.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #define IS_EMPTY(X) ((X) == NULL)
 #define FOREVER 1
@@ -48,7 +50,7 @@ typedef enum Player_status
     PLAYING
 } player_status;
 
-int server_fd, new_socket, valread;
+int master_socket, new_socket, valread;
 unsigned int port = DEFAULT_PORT;
 char buffer[1024] = {0};
 struct sockaddr_in socket_address;
@@ -124,19 +126,17 @@ void print_welcome_message()
 //setup server
 void setup_server()
 {
-    int adderlen = sizeof(socket_address);
     int opt = 1;
 
     // Creating socket
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    if ((master_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
         perror("Socket Initialization Failed!");
         exit(EXIT_FAILURE);
     }
 
     // attaching socket to the port (defualt port is 8013)
-    if (setsockopt(server_fd, SOL_SOCKET, (SO_REUSEADDR | SO_REUSEADDR),
-    &opt, sizeof(opt)) == -1)
+    if (setsockopt(master_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
     {
         perror("attaching port for the socket failed!");
         exit(EXIT_FAILURE);
@@ -146,33 +146,98 @@ void setup_server()
     socket_address.sin_addr.s_addr = INADDR_ANY;
     socket_address.sin_port = htons(port);
 
-    if (bind(server_fd, (struct sockaddr*)&socket_address, sizeof(socket_address)) < 0)
+    if (bind(master_socket, (struct sockaddr*)&socket_address, sizeof(socket_address)) < 0)
     {
         perror("The binding Failed!");
         exit(EXIT_FAILURE);
     }
 
-    if (listen(server_fd, 3) < 0)
+    if (listen(master_socket, 3) < 0)
     {
         perror("listen Failed!");
         exit(EXIT_FAILURE);
     }
 
+    fd_set readfds;
+    int adderlen = sizeof(socket_address);
+    usersPtr *__users;
+    int max_sd;
+    int activity;
+
     while (FOREVER)
     {
-        if ((new_socket = accept(server_fd, (struct sockaddr*)&socket_address, (socklen_t*)&adderlen)) < 0)
+
+        FD_ZERO(&readfds);
+
+        FD_SET(master_socket, &readfds);
+
+        int max_sd = master_socket;
+
+        __users = &list_of_users;
+
+        while (!IS_EMPTY(*__users))
         {
-            perror("Accept Failed!");
+            int sd = (*__users)->ipAddress;
+            
+            if (sd > 0)
+                FD_SET(sd, &readfds);
+            
+            __users = &(*__users)->nextUser;
+
+        }
+        
+        activity = select(max_sd + 1, &readfds, NULL, NULL, NULL);
+
+        if ((activity < 0))
+        {
+            perror("select");
             exit(EXIT_FAILURE);
         }
-        valread = read(new_socket, buffer, BUFFER_SIZE);
 
-        if (valread >= 0)
+        // if something happend on the master socket
+        if (FD_ISSET(master_socket, &readfds))
         {
-            char **request_parsed = requests_parser();
-            manage_requests(request_parsed);
-            memset(buffer, '\0', 1024); // clear the buffer
-        }    
+
+            if ((new_socket = accept(master_socket, (struct sockaddr *)&socket_address, (socklen_t*)&adderlen))<0)  
+            {
+                perror("accept");
+                exit(EXIT_FAILURE);
+            }
+
+            valread = read(new_socket, buffer, BUFFER_SIZE);
+
+            if (valread > 0)
+            {
+                char **request_parsed = requests_parser();
+                manage_requests(request_parsed);
+                memset(buffer, '\0', 1024); // clear the buffer
+            }
+        }
+
+        // else its some IO operation on some other socket
+
+         __users = &list_of_users;
+
+        while (!IS_EMPTY(*__users))
+        {
+            int sd = (*__users)->ipAddress;
+            
+            if (FD_ISSET(sd, &readfds))
+            {
+                if ((valread = read(sd, buffer, 1024)) == 0)
+                {
+                    // user disconnected do something!
+                }
+                else
+                {
+                    char **request_parsed = requests_parser();
+                    manage_requests(request_parsed);
+                    memset(buffer, '\0', 1024); // clear the buffer
+                }
+            }
+            
+            __users = &(*__users)->nextUser;
+        }
     }
 }
 
@@ -691,7 +756,7 @@ void signal_handler(int EXIT_CODE)
     // closing the connected socket
     close(new_socket);
     // closing the listening socket
-    shutdown(server_fd, SHUT_RDWR);
+    shutdown(master_socket, SHUT_RDWR);
 
     puts("\nSERVER DOWN");
     fflush(stdout);
