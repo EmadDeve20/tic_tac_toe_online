@@ -227,7 +227,7 @@ void setup_server()
             {
                 if ((valread = read(sd, buffer, 1024)) == 0)
                 {
-                    // user disconnected do something!
+                    handle_disconnected_user(sd);
                 }
                 else
                 {
