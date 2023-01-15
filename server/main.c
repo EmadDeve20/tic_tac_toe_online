@@ -54,7 +54,7 @@ char buffer[1024] = {0};
 struct sockaddr_in socket_address;
 
 typedef struct users {
-    uint32_t ipAddress;
+    int ipAddress;
     char *username;
     player_status p_status;
     struct users* nextUser;
@@ -242,7 +242,7 @@ void insert_user(char *username)
     {   
         memset(newUser->username, '\0', USERNAME_LENGTH+1); // clear piece of memory for string variable
         newUser->username = strncat(newUser->username, username, USERNAME_LENGTH);
-        newUser->ipAddress = socket_address.sin_addr.s_addr;
+        newUser->ipAddress = new_socket;
         newUser->p_status = WAITING_FOR_A_PLAYER;
         newUser->nextUser = NULL;
 
