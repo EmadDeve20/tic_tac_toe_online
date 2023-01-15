@@ -56,7 +56,7 @@ char buffer[1024] = {0};
 struct sockaddr_in socket_address;
 
 typedef struct users {
-    int ipAddress;
+    int socketAddress;
     char *username;
     player_status p_status;
     struct users* nextUser;
@@ -90,6 +90,7 @@ void manage_requests(char** request_parsed);
 void insert_user(char *username);
 void delete_user(char *username);
 char* find_a_player(const char *us_req);
+void handle_disconnected_user(const int socket_address);
 void create_a_playground(const usersPtr player1, const usersPtr player2);
 void delete_playground(const usersPtr user);
 int new_username_is_valid(char *);
@@ -177,7 +178,7 @@ void setup_server()
 
         while (!IS_EMPTY(*__users))
         {
-            int sd = (*__users)->ipAddress;
+            int sd = (*__users)->socketAddress;
             
             if (sd > 0)
                 FD_SET(sd, &readfds);
@@ -220,7 +221,7 @@ void setup_server()
 
         while (!IS_EMPTY(*__users))
         {
-            int sd = (*__users)->ipAddress;
+            int sd = (*__users)->socketAddress;
             
             if (FD_ISSET(sd, &readfds))
             {
@@ -307,7 +308,7 @@ void insert_user(char *username)
     {   
         memset(newUser->username, '\0', USERNAME_LENGTH+1); // clear piece of memory for string variable
         newUser->username = strncat(newUser->username, username, USERNAME_LENGTH);
-        newUser->ipAddress = new_socket;
+        newUser->socketAddress = new_socket;
         newUser->p_status = WAITING_FOR_A_PLAYER;
         newUser->nextUser = NULL;
 
@@ -409,6 +410,59 @@ char* find_a_player(const char *us_req)
     return username;
 }
 
+void handle_disconnected_user(const int socket_address)
+{
+
+    usersPtr *__users = &list_of_users;
+    playGroundPtr *__playgrounds = &mainGround;
+
+    usersPtr del_user = NULL;
+    usersPtr user_to_wait = NULL;
+    playGroundPtr del_playground = NULL;
+
+    // find username
+    while (!IS_EMPTY(*__users))
+    {
+        if ((*__users)->socketAddress == socket_address)
+        {
+            del_user = *__users;
+            break;
+        }
+        __users = &(*__users)->nextUser;
+    }
+
+    if (del_user == NULL)
+        return;
+
+    // find playground of disconnected user
+    while (!IS_EMPTY(*__playgrounds))
+    {
+        if ((*__playgrounds)->player_one->socketAddress == del_user->socketAddress)
+        {
+            del_playground = *__playgrounds;
+            user_to_wait = (*__playgrounds)->player_two;
+            break;
+        }
+        else if ((*__playgrounds)->player_two->socketAddress == del_user->socketAddress)
+        {   
+            del_playground = *__playgrounds;
+            user_to_wait = (*__playgrounds)->player_one;
+            break;
+        }
+
+        __playgrounds = &(*__playgrounds)->nextPlayGround;
+    }
+
+    delete_user(del_user->username);
+
+    if (user_to_wait != NULL && del_playground != NULL)
+    {
+        delete_playground(del_user);
+        user_to_wait->p_status = WAITING_FOR_A_PLAYER;
+    }
+
+}
+
 //TODO: test this function
 //TODO: add logs for this
 void create_a_playground(const usersPtr player1, const usersPtr player2)
@@ -437,8 +491,8 @@ void delete_playground(const usersPtr user)
 
     while (!IS_EMPTY(*pg))
     {
-        if (((strcmp((*pg)->player_one->username, user->username) == 0) && user->ipAddress == (*pg)->player_one->ipAddress)
-        || ((strcmp((*pg)->player_two->username, user->username) == 0) && user->ipAddress == (*pg)->player_two->ipAddress))
+        if (((strcmp((*pg)->player_one->username, user->username) == 0) && user->socketAddress == (*pg)->player_one->socketAddress)
+        || ((strcmp((*pg)->player_two->username, user->username) == 0) && user->socketAddress == (*pg)->player_two->socketAddress))
         {
             playGroundPtr delete_pg = *pg;
             (*pg)->nextPlayGround = delete_pg->nextPlayGround;
@@ -655,8 +709,8 @@ void send_playground_data(const playGroundPtr pg)
     sprintf(playground_data_one, PLAYGROUND_FORMAT, pg->player_two->username, pg->player_one->username, 
         pg->ground, pg->secound_player_points, pg->first_player_points);
     
-    send(pg->player_one->ipAddress, playground_data_one, PLAYGROUND_RESPONSE_SIZE, 0);
-    send(pg->player_two->ipAddress, playground_data_two, PLAYGROUND_RESPONSE_SIZE, 0);
+    send(pg->player_one->socketAddress, playground_data_one, PLAYGROUND_RESPONSE_SIZE, 0);
+    send(pg->player_two->socketAddress, playground_data_two, PLAYGROUND_RESPONSE_SIZE, 0);
 }
 
 int reset_playground(playGroundPtr pg)
