@@ -41,6 +41,7 @@ void initial_settings();
 void client_setup();
 void game_controller();
 int try_to_login();
+void reset_socket();
 void request_to_find_a_player();
 void logout();
 void close_end_of_string(char *text);
@@ -146,6 +147,21 @@ int try_to_login()
     }
 
     return 0;
+}
+
+void reset_socket()
+{
+    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    {
+        perror("Socket Connection Error!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if ((client_fd = connect(sock, (struct sockaddr*)&socket_address, sizeof(socket_address))) < 0)
+    {
+        perror("Connection Faild!\n");
+        exit(EXIT_FAILURE);
+    }
 }
 
 void request_to_find_a_player()
