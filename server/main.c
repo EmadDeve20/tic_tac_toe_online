@@ -341,11 +341,14 @@ void insert_user(char *username)
 
 /*
 delete a username using his name
-TODO: This function must be tested I am not sure about this function
 */ 
 void delete_user(char *username)
 {
     usersPtr *userLists = &list_of_users;
+    
+    log_type log_t = INFO;
+
+    char *username_tmp = username;
 
     if (strcmp((*userLists)->username, username) == 0)
     {
@@ -362,6 +365,10 @@ void delete_user(char *username)
         (*userLists)->nextUser = user_delete->nextUser;
         free(user_delete);
     }
+
+    // TODO: Use this the log print
+    // log_print(&log_t, "LOGOUT USER: ", username_tmp);
+    log_print(&log_t, "LOGOUT USER: ");
 }
 
 /*
