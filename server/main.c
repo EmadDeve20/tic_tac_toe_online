@@ -286,7 +286,7 @@ void manage_requests(char** request_parsed)
 
     if (strcmp(request_parsed[0], LOGOUT_REQUEST) == 0)
     {
-        // TODO: do delete user
+        delete_user(request_parsed[1]);
     }
     if (strcmp(request_parsed[0], FIND_PLAYER_REQUEST) == 0)
     {
