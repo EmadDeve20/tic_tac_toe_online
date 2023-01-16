@@ -25,6 +25,7 @@
 #define SELECT_REQUEST_LENGTH ((USERNAME_LENGTH*2) + 20)
 #define PLAYGROUND_SIZE 9
 #define CLEAR_SCREEN system("clear");
+#define RESET_SOCK reset_socket();
 
 static volatile sig_atomic_t keep_running = 1;
 
@@ -166,6 +167,7 @@ void reset_socket()
 
 void request_to_find_a_player()
 {
+    RESET_SOCK;
     char find_request[FIND_PLAYER_REQUEST_LENGTH];
     sprintf(find_request, FIND_PLAYER_REQUEST_FORMAT, username);
     send(sock, find_request, strlen(find_request), 0);
@@ -175,7 +177,8 @@ void request_to_find_a_player()
 send logout request 
 */
 void logout()
-{
+{   
+    RESET_SOCK;
     char logout_request[LOGOU_REQUEST_SIZE];
     sprintf(logout_request, LOGOUT_REQUEST_FORMAT, username);
     send(sock, logout_request, strlen(logout_request), 0);
@@ -183,6 +186,7 @@ void logout()
 
 int select_player_request(const char select)
 {
+    RESET_SOCK;
     char select_request[SELECT_REQUEST_LENGTH];
     sprintf(select_request, SELECT_REQUEST_FORMAT, username, select, competitor);
     
