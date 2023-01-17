@@ -301,12 +301,12 @@ void insert_user(char *username)
 {
     usersPtr newUser;
     newUser = malloc(sizeof(Users));
-    newUser->username =  malloc(USERNAME_LENGTH+1);
+    newUser->username =  malloc(USERNAME_LENGTH);
     log_type log_t;
     // is space available and the username is valid
     if ((newUser != NULL && newUser->username != NULL) && new_username_is_valid(username)) 
     {   
-        memset(newUser->username, '\0', USERNAME_LENGTH+1); // clear piece of memory for string variable
+        memset(newUser->username, '\0', USERNAME_LENGTH); // clear piece of memory for string variable
         newUser->username = strncat(newUser->username, username, USERNAME_LENGTH);
         newUser->socketAddress = new_socket;
         newUser->p_status = WAITING_FOR_A_PLAYER;
