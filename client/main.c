@@ -91,12 +91,6 @@ void initial_settings()
 */
 void client_setup()
 {
-    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-    {
-        perror("Socket Connection Error!\n");
-        exit(EXIT_FAILURE);
-    }
-
     socket_address.sin_family = AF_INET;
     socket_address.sin_port = htons(port);
 
@@ -107,11 +101,7 @@ void client_setup()
         exit(EXIT_FAILURE);
     }
 
-    if ((client_fd = connect(sock, (struct sockaddr*)&socket_address, sizeof(socket_address))) < 0)
-    {
-        perror("Connection Faild!\n");
-        exit(EXIT_FAILURE);
-    }
+    RESET_SOCK;
 }
 
 void game_controller()
