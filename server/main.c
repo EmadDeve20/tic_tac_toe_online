@@ -290,15 +290,18 @@ void manage_requests(char** request_parsed)
                 strcat(username, " ");
         }
         insert_user(username);
+        return;
     }
 
     if (strcmp(request_parsed[0], LOGOUT_REQUEST) == 0)
     {
         delete_user(request_parsed[1]);
+        return;
     }
     if (strcmp(request_parsed[0], FIND_PLAYER_REQUEST) == 0)
     {
         // TODO: do something
+        return;
     }
 }
 
