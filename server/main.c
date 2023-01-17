@@ -90,6 +90,7 @@ void manage_requests(char** request_parsed);
 void insert_user(char *username);
 void delete_user(char *username);
 char* find_a_player(const char *us_req);
+void handle_disconnected_user(const int socket_address);
 void create_a_playground(const usersPtr player1, const usersPtr player2);
 void delete_playground(const usersPtr user);
 int new_username_is_valid(char *);
@@ -223,12 +224,20 @@ void setup_server()
             int sd = (*__users)->socketAddress;
             
             if (FD_ISSET(sd, &readfds))
-            {
-                if ((valread = read(sd, buffer, 1024)) == 0)
-                {
-                    // user disconnected do something!
-                }
-                else
+            {   
+                // TODO: Use the handle_disconnected_user function after you debugged 
+                // if ((valread = read(sd, buffer, 1024)) == 0)
+                // {
+                //     handle_disconnected_user(sd);
+                // }
+                // else
+                // {
+                //     char **request_parsed = requests_parser();
+                //     manage_requests(request_parsed);
+                //     memset(buffer, '\0', 1024); // clear the buffer
+                // }
+
+                if ((valread = read(sd, buffer, 1024)) > 0)
                 {
                     char **request_parsed = requests_parser();
                     manage_requests(request_parsed);
@@ -248,7 +257,7 @@ char** requests_parser()
 {
     char *string_slice;
     string_slice = strtok(buffer, RESTRICT_PARAS_CHAR);
-    char **sliced = malloc(10 * sizeof(char*));
+    char **sliced = malloc(10 * USERNAME_LENGTH);
     int sliced_idx = 0;
 
     while (string_slice != NULL)
@@ -281,15 +290,18 @@ void manage_requests(char** request_parsed)
                 strcat(username, " ");
         }
         insert_user(username);
+        return;
     }
 
     if (strcmp(request_parsed[0], LOGOUT_REQUEST) == 0)
     {
-        // TODO: do delete user
+        delete_user(request_parsed[1]);
+        return;
     }
     if (strcmp(request_parsed[0], FIND_PLAYER_REQUEST) == 0)
     {
         // TODO: do something
+        return;
     }
 }
 
@@ -300,13 +312,13 @@ void insert_user(char *username)
 {
     usersPtr newUser;
     newUser = malloc(sizeof(Users));
-    newUser->username =  malloc(USERNAME_LENGTH+1);
+    newUser->username =  malloc(USERNAME_LENGTH);
     log_type log_t;
     // is space available and the username is valid
     if ((newUser != NULL && newUser->username != NULL) && new_username_is_valid(username)) 
     {   
-        memset(newUser->username, '\0', USERNAME_LENGTH+1); // clear piece of memory for string variable
-        newUser->username = strncat(newUser->username, username, USERNAME_LENGTH);
+        memset(newUser->username, '\0', USERNAME_LENGTH); // clear piece of memory for string variable
+        newUser->username = strncat(newUser->username, username, strlen(username));
         newUser->socketAddress = new_socket;
         newUser->p_status = WAITING_FOR_A_PLAYER;
         newUser->nextUser = NULL;
@@ -340,26 +352,44 @@ void insert_user(char *username)
 
 /*
 delete a username using his name
-TODO: This function must be tested I am not sure about this function
 */ 
 void delete_user(char *username)
 {
     usersPtr *userLists = &list_of_users;
-
-    if (strcmp((*userLists)->username, username) == 0)
+    usersPtr prevUser;
+    usersPtr curentUser;
+    usersPtr delUser;
+    
+    log_type log_t = INFO;
+    
+    if(!IS_EMPTY(*userLists))
     {
-        usersPtr user_delete = *userLists;
-        userLists = &(*userLists)->nextUser;
-        free(user_delete);
-    }
-    else
-    {
-        while (strcmp((*userLists)->username, username) != 0 && !IS_EMPTY((*userLists)->nextUser))
-            userLists = &(*userLists)->nextUser;
+    
+        if (strncmp((*userLists)->username, username, strlen(username)) == 0)
+        {
+            delUser = (*userLists)->nextUser;
+            free(delUser);
+        }
+        else
+        {   
+            curentUser = (*userLists)->nextUser;
+            while (strncmp(curentUser->username, username, strlen(username)) != 0 && !IS_EMPTY(curentUser))
+            {
+                prevUser = curentUser;
+                curentUser = curentUser->nextUser;
+            }
+            
+            if(!IS_EMPTY(curentUser))
+            {   
+                delUser = curentUser;
+                prevUser->nextUser = delUser->nextUser;
+                free(delUser);
+            }
+        }
 
-        usersPtr user_delete = (*userLists);
-        (*userLists)->nextUser = user_delete->nextUser;
-        free(user_delete);
+        // TODO: Use this the log print
+        // log_print(&log_t, "LOGOUT USER: ", username_tmp);
+        printf("USER DELETED:%s\n", username);
     }
 }
 
@@ -409,6 +439,59 @@ char* find_a_player(const char *us_req)
     return username;
 }
 
+void handle_disconnected_user(const int socket_address)
+{
+
+    usersPtr *__users = &list_of_users;
+    playGroundPtr *__playgrounds = &mainGround;
+
+    usersPtr del_user = NULL;
+    usersPtr user_to_wait = NULL;
+    playGroundPtr del_playground = NULL;
+
+    // find username
+    while (!IS_EMPTY(*__users))
+    {
+        if ((*__users)->socketAddress == socket_address)
+        {
+            del_user = *__users;
+            break;
+        }
+        __users = &(*__users)->nextUser;
+    }
+
+    if (del_user == NULL)
+        return;
+
+    // find playground of disconnected user
+    while (!IS_EMPTY(*__playgrounds))
+    {
+        if ((*__playgrounds)->player_one->socketAddress == del_user->socketAddress)
+        {
+            del_playground = *__playgrounds;
+            user_to_wait = (*__playgrounds)->player_two;
+            break;
+        }
+        else if ((*__playgrounds)->player_two->socketAddress == del_user->socketAddress)
+        {   
+            del_playground = *__playgrounds;
+            user_to_wait = (*__playgrounds)->player_one;
+            break;
+        }
+
+        __playgrounds = &(*__playgrounds)->nextPlayGround;
+    }
+
+    delete_user(del_user->username);
+
+    if (user_to_wait != NULL && del_playground != NULL)
+    {
+        delete_playground(del_user);
+        user_to_wait->p_status = WAITING_FOR_A_PLAYER;
+    }
+
+}
+
 //TODO: test this function
 //TODO: add logs for this
 void create_a_playground(const usersPtr player1, const usersPtr player2)
@@ -442,6 +525,13 @@ void delete_playground(const usersPtr user)
         {
             playGroundPtr delete_pg = *pg;
             (*pg)->nextPlayGround = delete_pg->nextPlayGround;
+
+            if (!IS_EMPTY(delete_pg->player_one))
+                delete_pg->player_one->p_status = WAITING_FOR_A_PLAYER;
+            
+            if (!IS_EMPTY(delete_pg->player_two))
+                delete_pg->player_two->p_status = WAITING_FOR_A_PLAYER;
+
             free(delete_pg);
             break;
         }
