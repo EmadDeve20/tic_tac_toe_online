@@ -224,12 +224,20 @@ void setup_server()
             int sd = (*__users)->socketAddress;
             
             if (FD_ISSET(sd, &readfds))
-            {
-                if ((valread = read(sd, buffer, 1024)) == 0)
-                {
-                    handle_disconnected_user(sd);
-                }
-                else
+            {   
+                // TODO: Use the handle_disconnected_user function after you debugged 
+                // if ((valread = read(sd, buffer, 1024)) == 0)
+                // {
+                //     handle_disconnected_user(sd);
+                // }
+                // else
+                // {
+                //     char **request_parsed = requests_parser();
+                //     manage_requests(request_parsed);
+                //     memset(buffer, '\0', 1024); // clear the buffer
+                // }
+
+                if ((valread = read(sd, buffer, 1024)) > 0)
                 {
                     char **request_parsed = requests_parser();
                     manage_requests(request_parsed);
