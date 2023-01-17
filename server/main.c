@@ -257,7 +257,7 @@ char** requests_parser()
 {
     char *string_slice;
     string_slice = strtok(buffer, RESTRICT_PARAS_CHAR);
-    char **sliced = malloc(10 * sizeof(char*));
+    char **sliced = malloc(10 * USERNAME_LENGTH);
     int sliced_idx = 0;
 
     while (string_slice != NULL)
@@ -318,7 +318,7 @@ void insert_user(char *username)
     if ((newUser != NULL && newUser->username != NULL) && new_username_is_valid(username)) 
     {   
         memset(newUser->username, '\0', USERNAME_LENGTH); // clear piece of memory for string variable
-        newUser->username = strncat(newUser->username, username, USERNAME_LENGTH);
+        newUser->username = strncat(newUser->username, username, strlen(username));
         newUser->socketAddress = new_socket;
         newUser->p_status = WAITING_FOR_A_PLAYER;
         newUser->nextUser = NULL;
@@ -356,30 +356,41 @@ delete a username using his name
 void delete_user(char *username)
 {
     usersPtr *userLists = &list_of_users;
+    usersPtr prevUser;
+    usersPtr curentUser;
+    usersPtr delUser;
     
     log_type log_t = INFO;
-
-    char *username_tmp = username;
-
-    if (strcmp((*userLists)->username, username) == 0)
+    
+    if(!IS_EMPTY(*userLists))
     {
-        usersPtr user_delete = *userLists;
-        userLists = &(*userLists)->nextUser;
-        free(user_delete);
-    }
-    else
-    {
-        while (strcmp((*userLists)->username, username) != 0 && !IS_EMPTY((*userLists)->nextUser))
-            userLists = &(*userLists)->nextUser;
+    
+        if (strncmp((*userLists)->username, username, strlen(username)) == 0)
+        {
+            delUser = (*userLists)->nextUser;
+            free(delUser);
+        }
+        else
+        {   
+            curentUser = (*userLists)->nextUser;
+            while (strncmp(curentUser->username, username, strlen(username)) != 0 && !IS_EMPTY(curentUser))
+            {
+                prevUser = curentUser;
+                curentUser = curentUser->nextUser;
+            }
+            
+            if(!IS_EMPTY(curentUser))
+            {   
+                delUser = curentUser;
+                prevUser->nextUser = delUser->nextUser;
+                free(delUser);
+            }
+        }
 
-        usersPtr user_delete = (*userLists);
-        (*userLists)->nextUser = user_delete->nextUser;
-        free(user_delete);
+        // TODO: Use this the log print
+        // log_print(&log_t, "LOGOUT USER: ", username_tmp);
+        printf("USER DELETED:%s\n", username);
     }
-
-    // TODO: Use this the log print
-    // log_print(&log_t, "LOGOUT USER: ", username_tmp);
-    log_print(&log_t, "LOGOUT USER: ");
 }
 
 /*
