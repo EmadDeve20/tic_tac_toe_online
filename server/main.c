@@ -367,7 +367,8 @@ void delete_user(char *username)
     
         if (strncmp((*userLists)->username, username, strlen(username)) == 0)
         {
-            delUser = (*userLists)->nextUser;
+            *userLists = (*userLists)->nextUser;
+            delUser = (*userLists);
             free(delUser);
         }
         else
