@@ -16,7 +16,7 @@
 #define LOGIN_REQUEST_SIZE  9 + USERNAME_LENGTH
 #define LOGOU_REQUEST_SIZE 10 +  USERNAME_LENGTH
 #define LOGIN_STATUS_OK "LOGIN OK"
-#define LOGIN_STATUS_SIZE 9
+#define LOGIN_STATUS_SIZE 8
 #define LOGIN_REQUEST_FORMAT "LOGIN %s \r\n" // LOGIN $username
 #define LOGOUT_REQUEST_FORMAT "LOGOUT %s \r\n" // LOGOUT $username
 #define FIND_PLAYER_REQUEST_FORMAT "FIND %s \r\n" // FIND $username 
@@ -130,8 +130,8 @@ int try_to_login()
     sprintf(login_request, LOGIN_REQUEST_FORMAT, username);
     send(sock, login_request, strlen(login_request), 0);
 
-    valread = read(sock, buffer, LOGIN_STATUS_SIZE);
-    if (valread > 0)
+    recv(sock, buffer, BUFFER_SIZE, 0);
+    if (strlen(buffer) >= LOGIN_STATUS_SIZE)
     {
         if (strcmp(buffer, LOGIN_STATUS_OK) == 0)
             return 1;
