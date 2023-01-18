@@ -225,19 +225,11 @@ void setup_server()
             
             if (FD_ISSET(sd, &readfds))
             {   
-                // TODO: Use the handle_disconnected_user function after you debugged 
-                // if ((valread = read(sd, buffer, 1024)) == 0)
-                // {
-                //     handle_disconnected_user(sd);
-                // }
-                // else
-                // {
-                //     char **request_parsed = requests_parser();
-                //     manage_requests(request_parsed);
-                //     memset(buffer, '\0', 1024); // clear the buffer
-                // }
-
-                if ((valread = read(sd, buffer, 1024)) > 0)
+                if ((valread = read(sd, buffer, 1024)) == 0)
+                {
+                    handle_disconnected_user(&sd);
+                }
+                else
                 {
                     char **request_parsed = requests_parser();
                     manage_requests(request_parsed);
