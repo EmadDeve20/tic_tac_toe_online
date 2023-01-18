@@ -90,7 +90,7 @@ void manage_requests(char** request_parsed);
 void insert_user(char *username);
 int delete_user(const int socket_addr);
 char* find_a_player(const char *us_req);
-void handle_disconnected_user(const int socket_address);
+void handle_disconnected_user(const int *socket_address);
 void create_a_playground(const usersPtr player1, const usersPtr player2);
 int delete_playground(const int socket_addr);
 int new_username_is_valid(char *);
@@ -448,57 +448,15 @@ char* find_a_player(const char *us_req)
     return username;
 }
 
-void handle_disconnected_user(const int socket_address)
+// TODO: This function has a bug! 
+//we can not delete first a user after that check if the player was on the playground or not!
+void handle_disconnected_user(const int *socket_address)
 {
 
-    usersPtr *__users = &list_of_users;
-    playGroundPtr *__playgrounds = &mainGround;
-
-    usersPtr del_user = NULL;
-    usersPtr user_to_wait = NULL;
-    playGroundPtr del_playground = NULL;
-
-    // find username
-    while (!IS_EMPTY(*__users))
+    if (delete_user(*socket_address))
     {
-        if ((*__users)->socketAddress == socket_address)
-        {
-            del_user = *__users;
-            break;
-        }
-        __users = &(*__users)->nextUser;
-    }
-
-    if (del_user == NULL)
-        return;
-
-    // find playground of disconnected user
-    while (!IS_EMPTY(*__playgrounds))
-    {
-        if ((*__playgrounds)->player_one->socketAddress == del_user->socketAddress)
-        {
-            del_playground = *__playgrounds;
-            user_to_wait = (*__playgrounds)->player_two;
-            break;
-        }
-        else if ((*__playgrounds)->player_two->socketAddress == del_user->socketAddress)
-        {   
-            del_playground = *__playgrounds;
-            user_to_wait = (*__playgrounds)->player_one;
-            break;
-        }
-
-        __playgrounds = &(*__playgrounds)->nextPlayGround;
-    }
-
-    delete_user(del_user->username);
-
-    if (user_to_wait != NULL && del_playground != NULL)
-    {
-        delete_playground(del_user);
-        user_to_wait->p_status = WAITING_FOR_A_PLAYER;
-    }
-
+        delete_playground(*socket_address);
+    } 
 }
 
 //TODO: test this function
