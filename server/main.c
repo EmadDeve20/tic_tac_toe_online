@@ -92,7 +92,7 @@ int delete_user(const int socket_addr);
 char* find_a_player(const char *us_req);
 void handle_disconnected_user(const int socket_address);
 void create_a_playground(const usersPtr player1, const usersPtr player2);
-void delete_playground(const usersPtr user);
+int delete_playground(const int socket_addr);
 int new_username_is_valid(char *);
 void chage_port(const char *port);
 void log_print(const log_type *type, const char* message, ...);
@@ -523,23 +523,30 @@ void create_a_playground(const usersPtr player1, const usersPtr player2)
 }
 
 //TODO: Do test this function
-void delete_playground(const usersPtr user)
+// @return the socket address of the user not disconnected
+int delete_playground(const int socket_addr)
 {
     playGroundPtr *pg = &mainGround;
+    int sd = 0;
 
     while (!IS_EMPTY(*pg))
     {
-        if (((strcmp((*pg)->player_one->username, user->username) == 0) && user->socketAddress == (*pg)->player_one->socketAddress)
-        || ((strcmp((*pg)->player_two->username, user->username) == 0) && user->socketAddress == (*pg)->player_two->socketAddress))
+        if (((*pg)->player_one->socketAddress == socket_addr) || ((*pg)->player_two->socketAddress == socket_addr))
         {
             playGroundPtr delete_pg = *pg;
-            (*pg)->nextPlayGround = delete_pg->nextPlayGround;
+            *pg = (*pg)->nextPlayGround;
 
             if (!IS_EMPTY(delete_pg->player_one))
+            {
                 delete_pg->player_one->p_status = WAITING_FOR_A_PLAYER;
+                sd = delete_pg->player_one->socketAddress;
+            }
             
             if (!IS_EMPTY(delete_pg->player_two))
+            {
                 delete_pg->player_two->p_status = WAITING_FOR_A_PLAYER;
+                sd = delete_pg->player_one->socketAddress;
+            }
 
             free(delete_pg);
             break;
@@ -547,6 +554,8 @@ void delete_playground(const usersPtr user)
         else
             pg = &(*pg)->nextPlayGround;
     }
+
+    return sd;
 }
 
 //TODO: do test this function
