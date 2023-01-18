@@ -88,7 +88,7 @@ void setup_server();
 char** requests_parser();
 void manage_requests(char** request_parsed);
 void insert_user(char *username);
-void delete_user(char *username);
+void delete_user(const int socket_addr);
 char* find_a_player(const char *us_req);
 void handle_disconnected_user(const int socket_address);
 void create_a_playground(const usersPtr player1, const usersPtr player2);
@@ -295,7 +295,7 @@ void manage_requests(char** request_parsed)
 
     if (strcmp(request_parsed[0], LOGOUT_REQUEST) == 0)
     {
-        delete_user(request_parsed[1]);
+        // delete_user(request_parsed[1]);
         return;
     }
     if (strcmp(request_parsed[0], FIND_PLAYER_REQUEST) == 0)
@@ -353,20 +353,22 @@ void insert_user(char *username)
 /*
 delete a username using his name
 */ 
-void delete_user(char *username)
+void delete_user(const int socket_addr)
 {
     usersPtr *userLists = &list_of_users;
     usersPtr prevUser;
     usersPtr curentUser;
     usersPtr delUser;
+    char username[USERNAME_LENGTH];
     
     log_type log_t = INFO;
     
     if(!IS_EMPTY(*userLists))
     {
     
-        if (strncmp((*userLists)->username, username, strlen(username)) == 0)
+        if ((*userLists)->socketAddress == socket_addr)
         {
+            strncat(username, (*userLists)->username, strlen((*userLists)->username));
             *userLists = (*userLists)->nextUser;
             delUser = (*userLists);
             free(delUser);
@@ -374,7 +376,7 @@ void delete_user(char *username)
         else
         {   
             curentUser = (*userLists)->nextUser;
-            while (strncmp(curentUser->username, username, strlen(username)) != 0 && !IS_EMPTY(curentUser))
+            while (curentUser->socketAddress == socket_addr && !IS_EMPTY(curentUser))
             {
                 prevUser = curentUser;
                 curentUser = curentUser->nextUser;
@@ -384,6 +386,7 @@ void delete_user(char *username)
             {   
                 delUser = curentUser;
                 prevUser->nextUser = delUser->nextUser;
+                strncat(username, curentUser->username, strlen(curentUser->username));
                 free(delUser);
             }
         }
