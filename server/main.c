@@ -92,7 +92,7 @@ int delete_user(const int *socket_addr);
 char* find_a_player(const char *us_req);
 void handle_disconnected_user(const int *socket_address);
 void create_a_playground(const usersPtr player1, const usersPtr player2);
-int delete_playground(const int socket_addr);
+int delete_playground(const int *socket_addr);
 int new_username_is_valid(char *);
 void chage_port(const char *port);
 void log_print(const log_type *type, const char* message, ...);
@@ -444,7 +444,7 @@ char* find_a_player(const char *us_req)
 void handle_disconnected_user(const int *socket_address)
 {
 
-    delete_playground(*socket_address);
+    delete_playground(socket_address);
     delete_user(socket_address);
 
 }
@@ -472,14 +472,14 @@ void create_a_playground(const usersPtr player1, const usersPtr player2)
 
 //TODO: Do test this function
 // @return the socket address of the user not disconnected
-int delete_playground(const int socket_addr)
+int delete_playground(const int *socket_addr)
 {
     playGroundPtr *pg = &mainGround;
     int sd = 0;
 
     while (!IS_EMPTY(*pg))
     {
-        if (((*pg)->player_one->socketAddress == socket_addr) || ((*pg)->player_two->socketAddress == socket_addr))
+        if (((*pg)->player_one->socketAddress == *socket_addr) || ((*pg)->player_two->socketAddress == *socket_addr))
         {
             playGroundPtr delete_pg = *pg;
             *pg = (*pg)->nextPlayGround;
