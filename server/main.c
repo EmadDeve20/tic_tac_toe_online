@@ -440,15 +440,13 @@ char* find_a_player(const char *us_req)
     return username;
 }
 
-// TODO: This function has a bug! 
-//we can not delete first a user after that check if the player was on the playground or not!
+// TODO: Test this function 
 void handle_disconnected_user(const int *socket_address)
 {
 
-    if (delete_user(*socket_address))
-    {
-        delete_playground(*socket_address);
-    } 
+    delete_playground(*socket_address);
+    delete_user(*socket_address);
+
 }
 
 //TODO: test this function
