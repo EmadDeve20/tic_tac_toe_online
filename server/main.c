@@ -86,7 +86,7 @@ playGroundPtr mainGround = NULL;
 void print_welcome_message();
 void setup_server();
 char** requests_parser();
-void manage_requests(char** request_parsed);
+void manage_requests(char** request_parsed, const int *sock);
 void insert_user(char *username);
 int delete_user(const int socket_addr);
 char* find_a_player(const char *us_req);
@@ -210,7 +210,7 @@ void setup_server()
             if (valread > 0)
             {
                 char **request_parsed = requests_parser();
-                manage_requests(request_parsed);
+                manage_requests(request_parsed, &new_socket);
                 memset(buffer, '\0', 1024); // clear the buffer
             }
         }
@@ -232,7 +232,7 @@ void setup_server()
                 else
                 {
                     char **request_parsed = requests_parser();
-                    manage_requests(request_parsed);
+                    manage_requests(request_parsed, &sd);
                     memset(buffer, '\0', 1024); // clear the buffer
                 }
             }
@@ -266,7 +266,7 @@ char** requests_parser()
 /*
 Check the parsed request and execute the commands
 */
-void manage_requests(char** request_parsed)
+void manage_requests(char** request_parsed, const int *sock)
 {
     if (strcmp(request_parsed[0], LOGIN_REQUEST) == 0)
     {   
