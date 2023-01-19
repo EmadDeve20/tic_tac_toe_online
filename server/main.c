@@ -87,7 +87,7 @@ void print_welcome_message();
 void setup_server();
 char** requests_parser();
 void manage_requests(char** request_parsed, const int *sock);
-void insert_user(char *username);
+void insert_user(char *username, const int *sock);
 int delete_user(const int socket_addr);
 char* find_a_player(const char *us_req);
 void handle_disconnected_user(const int *socket_address);
@@ -281,7 +281,7 @@ void manage_requests(char** request_parsed, const int *sock)
             if (strcmp(request_parsed[index], "\r\n")!=0)
                 strcat(username, " ");
         }
-        insert_user(username);
+        insert_user(username, sock);
         return;
     }
 
@@ -300,7 +300,7 @@ void manage_requests(char** request_parsed, const int *sock)
 /*
 Insert the new user
 */
-void insert_user(char *username)
+void insert_user(char *username, const int *sock)
 {
     usersPtr newUser;
     newUser = malloc(sizeof(Users));
@@ -311,7 +311,7 @@ void insert_user(char *username)
     {   
         memset(newUser->username, '\0', USERNAME_LENGTH); // clear piece of memory for string variable
         newUser->username = strncat(newUser->username, username, strlen(username));
-        newUser->socketAddress = new_socket;
+        newUser->socketAddress = *sock;
         newUser->p_status = WAITING_FOR_A_PLAYER;
         newUser->nextUser = NULL;
 
