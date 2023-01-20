@@ -165,6 +165,7 @@ void setup_server()
     int max_sd;
     int activity;
 
+    //TODO: Check whether This selector Works or Not!
     while (FOREVER)
     {
 
@@ -287,7 +288,8 @@ void manage_requests(char** request_parsed, const int *sock)
 
     if (strcmp(request_parsed[0], LOGOUT_REQUEST) == 0)
     {
-        // delete_user(request_parsed[1]);
+        // delete_user(sock);
+        printf("Sock Del: %d\n", *sock);
         return;
     }
     if (strcmp(request_parsed[0], FIND_PLAYER_REQUEST) == 0)
