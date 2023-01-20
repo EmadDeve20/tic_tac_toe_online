@@ -57,6 +57,7 @@ struct sockaddr_in socket_address;
 
 typedef struct users {
     int ipAddress;
+    int socketAddress;
     char *username;
     player_status p_status;
     struct users* nextUser;
