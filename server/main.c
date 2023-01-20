@@ -56,7 +56,7 @@ char buffer[1024] = {0};
 struct sockaddr_in socket_address;
 
 typedef struct users {
-    int socketAddress;
+    int ipAddress;
     char *username;
     player_status p_status;
     struct users* nextUser;
