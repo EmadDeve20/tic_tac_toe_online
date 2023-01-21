@@ -107,6 +107,7 @@ void game_controller()
 
     try_to_login() ? game_is_start = 1 : exit(EXIT_FAILURE);
 
+    sleep(1);
     request_to_find_a_player();
 
     while (keep_running)
