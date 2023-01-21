@@ -165,8 +165,8 @@ void setup_server()
     usersPtr *__users;
     int max_sd;
     int activity;
+    int sd = 0;
 
-    //TODO: Check whether This selector Works or Not!
     while (FOREVER)
     {
 
@@ -174,16 +174,19 @@ void setup_server()
 
         FD_SET(master_socket, &readfds);
 
-        int max_sd = master_socket;
+        max_sd = master_socket;
 
         __users = &list_of_users;
 
         while (!IS_EMPTY(*__users))
         {
-            int sd = (*__users)->socketAddress;
+            sd = (*__users)->socketAddress;
             
             if (sd > 0)
                 FD_SET(sd, &readfds);
+            
+            if (sd > max_sd)
+                max_sd = sd;
             
             __users = &(*__users)->nextUser;
 
@@ -223,7 +226,7 @@ void setup_server()
 
         while (!IS_EMPTY(*__users))
         {
-            int sd = (*__users)->socketAddress;
+            sd = (*__users)->socketAddress;
             
             if (FD_ISSET(sd, &readfds))
             {   
