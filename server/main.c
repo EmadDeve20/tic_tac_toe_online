@@ -294,7 +294,7 @@ void manage_requests(char** request_parsed, const int *sock)
 
     if (strcmp(request_parsed[0], FIND_PLAYER_REQUEST) == 0)
     {
-        // TODO: do something
+        find_a_player(request_parsed[1], sock);
         return;
     }
 }
