@@ -11,10 +11,8 @@
 #define USERNAME_LENGTH 20
 #define RESTRICT_PARAS_CHAR " " // Actually space character
 #define LOGIN_REQUEST "LOGIN"
-#define LOGOUT_REQUEST "LOGOUT"
 #define PLAYGROUND_RESPONSE "PLAYGROUND"
 #define LOGIN_REQUEST_SIZE  9 + USERNAME_LENGTH
-#define LOGOU_REQUEST_SIZE 10 +  USERNAME_LENGTH
 #define LOGIN_STATUS_OK "LOGIN OK"
 #define LOGIN_STATUS_SIZE 8
 #define LOGIN_REQUEST_FORMAT "LOGIN %s \r\n" // LOGIN $username
@@ -44,7 +42,6 @@ void game_controller();
 int try_to_login();
 void reset_socket();
 void request_to_find_a_player();
-void logout();
 void close_end_of_string(char *text);
 int select_player_request(const char select);
 char selected_number();
@@ -63,7 +60,6 @@ int main()
     initial_settings();
     client_setup();
     game_controller();
-    logout();
 
 }
 
@@ -163,16 +159,6 @@ void request_to_find_a_player()
     send(sock, find_request, strlen(find_request), 0);
 }
 
-/*
-send logout request 
-*/
-void logout()
-{   
-    RESET_SOCK;
-    char logout_request[LOGOU_REQUEST_SIZE];
-    sprintf(logout_request, LOGOUT_REQUEST_FORMAT, username);
-    send(sock, logout_request, strlen(logout_request), 0);
-}
 
 int select_player_request(const char select)
 {
