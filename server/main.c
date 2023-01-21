@@ -371,6 +371,7 @@ int delete_user(const int *socket_addr)
             *userLists = (*userLists)->nextUser;
             delUser = (*userLists);
             user_status = delUser->p_status;
+            close(delUser->socketAddress);
             free(delUser);
         }
         else
@@ -388,6 +389,7 @@ int delete_user(const int *socket_addr)
                 prevUser->nextUser = delUser->nextUser;
                 strncat(username, curentUser->username, strlen(curentUser->username));
                 user_status = delUser->p_status;
+                close(delUser->socketAddress);
                 free(delUser);
             }
         }
