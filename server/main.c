@@ -18,7 +18,6 @@
 #define DEFAULT_PORT 8013
 #define BUFFER_SIZE 1024
 #define LOGIN_REQUEST "LOGIN"
-#define LOGOUT_REQUEST "LOGOUT"
 #define FIND_PLAYER_REQUEST "FIND"
 #define RESTRICT_PARAS_CHAR " " // Actually space character
 #define LOGIN_STATUS_OK "LOGIN OK"
@@ -290,12 +289,6 @@ void manage_requests(char** request_parsed, const int *sock)
         return;
     }
 
-    if (strcmp(request_parsed[0], LOGOUT_REQUEST) == 0)
-    {
-        // delete_user(sock);
-        printf("Sock Del: %d\n", *sock);
-        return;
-    }
     if (strcmp(request_parsed[0], FIND_PLAYER_REQUEST) == 0)
     {
         // TODO: do something
