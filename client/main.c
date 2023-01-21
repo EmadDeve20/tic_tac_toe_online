@@ -24,6 +24,8 @@
 #define PLAYGROUND_SIZE 9
 #define CLEAR_SCREEN system("clear");
 #define RESET_SOCK reset_socket();
+#define PLAYER_FOUND_RESPONSE "PLAYER FK\r\n"
+#define PLAYER_NOT_FOUND_RESPONSE "PLAYER NF\r\n"
 
 static volatile sig_atomic_t keep_running = 1;
 
