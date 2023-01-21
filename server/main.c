@@ -11,6 +11,7 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <stdbool.h>
 
 #define IS_EMPTY(X) ((X) == NULL)
 #define FOREVER 1
@@ -397,11 +398,11 @@ This function try to find a player
 */
 void find_a_player(const char *us_req, const int *sock)
 {
-    char *username = {0};
+    bool player_found = false;
     usersPtr *__users = &list_of_users;
     usersPtr player1 = NULL, player2 = NULL;
 
-    while (!IS_EMPTY(*__users))
+    while (!IS_EMPTY(*__users) && !IS_EMPTY((*__users)->nextUser))
     {
         if ((*__users)->p_status == WAITING_FOR_A_PLAYER && (strcmp((*__users)->username, us_req)))
         {
@@ -430,11 +431,11 @@ void find_a_player(const char *us_req, const int *sock)
 
     if (!IS_EMPTY(player1) && !IS_EMPTY(player2) && (player1->p_status == PLAYING && player2->p_status == PLAYING))
     {
-        username = player2->username;
+        player_found = true;
         create_a_playground(player1, player2);
     }
 
-    if (strlen(username) > 0)
+    if (player_found > 0)
         send(*sock, PLAYER_FOUND_RESPONSE, strlen(PLAYER_FOUND_RESPONSE), 0);
     else
         send(*sock, PLAYER_NOT_FOUND_RESPONSE, strlen(PLAYER_FOUND_RESPONSE), 0);
