@@ -22,6 +22,9 @@
 #define RESTRICT_PARAS_CHAR " " // Actually space character
 #define LOGIN_STATUS_OK "LOGIN OK"
 #define LOGIN_STATUS_FAILED "LOGIN NK"
+#define PLAYER_FOUND_RESPONSE "PLAYER FK"
+#define PLAYER_NOT_FOUND_RESPONSE "PLAYER NF"
+#define PLAYER_FOUND_RESPONSE_SIZE strlen(PLAYER_FOUND_RESPONSE)
 #define LOGIN_STATUS_SIZE 9
 #define USERNAME_LENGTH 20
 #define GROUND_SIZE 9
@@ -89,7 +92,7 @@ char** requests_parser();
 void manage_requests(char** request_parsed, const int *sock);
 void insert_user(char *username, const int *sock);
 void delete_user(const int *socket_addr);
-char* find_a_player(const char *us_req);
+void  find_a_player(const char *us_req, const int *sock);
 void handle_disconnected_user(const int *socket_address);
 void create_a_playground(const usersPtr player1, const usersPtr player2);
 int delete_playground(const int *socket_addr);
@@ -391,9 +394,8 @@ void delete_user(const int *socket_addr)
 
 /*
 This function try to find a player
-@return competitor's name
 */
-char* find_a_player(const char *us_req)
+void find_a_player(const char *us_req, const int *sock)
 {
     char *username = {0};
     usersPtr *__users = &list_of_users;
@@ -432,7 +434,10 @@ char* find_a_player(const char *us_req)
         create_a_playground(player1, player2);
     }
 
-    return username;
+    if (strlen(username) > 0)
+        send(*sock, PLAYER_FOUND_RESPONSE, strlen(PLAYER_FOUND_RESPONSE), 0);
+    else
+        send(*sock, PLAYER_NOT_FOUND_RESPONSE, strlen(PLAYER_FOUND_RESPONSE), 0);
 }
 
 // TODO: Test this function 
