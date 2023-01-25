@@ -165,7 +165,7 @@ void setup_server()
 
     fd_set readfds;
     int adderlen = sizeof(socket_address);
-    usersPtr *__users;
+    usersPtr *__users = &list_of_users;;
     int max_sd;
     int activity;
     int sd = 0;
@@ -179,10 +179,11 @@ void setup_server()
 
         max_sd = master_socket;
 
-        __users = &list_of_users;
+        FOREACH_USERS_ONE:
 
-        while (!IS_EMPTY(*__users))
-        {
+            if (IS_EMPTY(*__users))
+                goto END_ONE;
+
             sd = (*__users)->socketAddress;
             
             if (sd > 0)
@@ -192,8 +193,13 @@ void setup_server()
                 max_sd = sd;
             
             __users = &(*__users)->nextUser;
+            goto FOREACH_USERS_ONE;
 
-        }
+        END_ONE:
+            __users = &list_of_users;
+
+
+
         
         activity = select(max_sd + 1, &readfds, NULL, NULL, NULL);
 
@@ -225,10 +231,11 @@ void setup_server()
 
         // else its some IO operation on some other socket
 
-         __users = &list_of_users;
+        FOREACH_USERS_TWO:
 
-        while (!IS_EMPTY(*__users))
-        {
+            if (IS_EMPTY(*__users))
+                goto END_TWO;
+
             sd = (*__users)->socketAddress;
             
             if (FD_ISSET(sd, &readfds))
@@ -246,7 +253,9 @@ void setup_server()
             }
             
             __users = &(*__users)->nextUser;
-        }
+            
+        END_TWO:
+            __users = &list_of_users;
     }
 }
 
