@@ -243,6 +243,8 @@ void setup_server()
                 if ((valread = read(sd, buffer, 1024)) == 0)
                 {
                     handle_disconnected_user(&sd);
+                    if (IS_EMPTY(*__users))
+                        goto END_TWO;
                 }
                 else
                 {
@@ -374,9 +376,10 @@ void delete_user(const int *socket_addr)
         {
             strncat(username, (*userLists)->username, strlen((*userLists)->username));
             delUser = *userLists;
-            *userLists = (*userLists)->nextUser;
             close(delUser->socketAddress);
+            delUser = NULL;
             free(delUser);
+            *userLists = NULL;
         }
         else
         {   
