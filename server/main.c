@@ -253,6 +253,7 @@ void setup_server()
             }
             
             __users = &(*__users)->nextUser;
+            goto FOREACH_USERS_TWO;
             
         END_TWO:
             __users = &list_of_users;
