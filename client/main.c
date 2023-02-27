@@ -23,7 +23,6 @@
 #define SELECT_REQUEST_LENGTH ((USERNAME_LENGTH*2) + 20)
 #define PLAYGROUND_SIZE 9
 #define CLEAR_SCREEN system("clear");
-#define RESET_SOCK reset_socket();
 #define PLAYER_FOUND_RESPONSE "PLAYER FK\r\n"
 #define PLAYER_NOT_FOUND_RESPONSE "PLAYER NF\r\n"
 
@@ -42,7 +41,6 @@ void initial_settings();
 void client_setup();
 void game_controller();
 int try_to_login();
-void reset_socket();
 int request_to_find_a_player();
 void close_end_of_string(char *text);
 int select_player_request(const char select);
@@ -71,7 +69,7 @@ void initial_settings()
     printf("Enter your name: ");
     fgets(username, USERNAME_LENGTH, stdin);
     close_end_of_string(username);
-    
+
     printf("Enter Server IP: ");
     fgets(server_address, 1024, stdin);
     close_end_of_string(server_address);
@@ -99,7 +97,17 @@ void client_setup()
         exit(EXIT_FAILURE);
     }
 
-    RESET_SOCK;
+    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    {
+        perror("Socket Connection Error!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if ((client_fd = connect(sock, (struct sockaddr*)&socket_address, sizeof(socket_address))) < 0)
+    {
+        perror("Connection Faild!\n");
+        exit(EXIT_FAILURE);
+    }
 }
 
 void game_controller()
@@ -139,20 +147,6 @@ int try_to_login()
     return 0;
 }
 
-void reset_socket()
-{
-    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-    {
-        perror("Socket Connection Error!\n");
-        exit(EXIT_FAILURE);
-    }
-
-    if ((client_fd = connect(sock, (struct sockaddr*)&socket_address, sizeof(socket_address))) < 0)
-    {
-        perror("Connection Faild!\n");
-        exit(EXIT_FAILURE);
-    }
-}
 
 /*
 send the find a player request
@@ -160,7 +154,6 @@ send the find a player request
 */
 int request_to_find_a_player()
 {
-    RESET_SOCK;
     char find_request[FIND_PLAYER_REQUEST_LENGTH];
     char RESPONSE[BUFFER_SIZE];
 
@@ -176,7 +169,6 @@ int request_to_find_a_player()
 
 int select_player_request(const char select)
 {
-    RESET_SOCK;
     char select_request[SELECT_REQUEST_LENGTH];
     sprintf(select_request, SELECT_REQUEST_FORMAT, username, select, competitor);
     
