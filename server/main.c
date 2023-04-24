@@ -35,6 +35,7 @@
 #define LOG_WARNING_FORMAT          "\033[0;37m[%d-%02d-%02d  %02d:%02d] \033[0;33m%s\n\033[0m"
 #define LOG_ERROR_FORMAT            "\033[0;37m[%d-%02d-%02d  %02d:%02d] \033[0;31m%s\n\033[0m"
 #define LOG_INFO_FORMAT             "\033[0;37m[%d-%02d-%02d  %02d:%02d] \033[0;34m%s\n\033[0m"
+#define LOG_DEFAULT_FORMAT          "[%d-%02d-%02d  %02d:%02d] %s\n"
 
 #define PLAYGROUND_FORMAT           "PLAYGROUND %s %s %s %d %d \r\n"
 #define PLAYGROUND_RESPONSE_SIZE ((USERNAME_LENGTH*2) + GROUND_SIZE + 30) 
@@ -782,27 +783,33 @@ void log_print(const log_type *type, const char* message, ...)
     char new_message[1024] = {0};
     va_list varg;
     va_start(varg, message);
+    
 
     switch (*type)
     {
     case OK:
-        printf(LOG_OK_FORMAT, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, message);
+        sprintf(new_message, LOG_OK_FORMAT, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, message);
+        vfprintf(stdout, new_message,  varg);
         break;
     
     case WARNING:
-        printf(LOG_WARNING_FORMAT, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, message);
+        sprintf(new_message, LOG_WARNING_FORMAT, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, message);
+        vfprintf(stdout, new_message, varg);
         break;
     
     case ERROR:
-        printf(LOG_ERROR_FORMAT, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, message);
+        sprintf(new_message, LOG_ERROR_FORMAT, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, message);
+        vfprintf(stdout, new_message, varg);
         break;
     
     case INFO:
-        printf(LOG_INFO_FORMAT, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, message);
+        sprintf(new_message, LOG_INFO_FORMAT, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, message);
+        vfprintf(stdout, new_message, varg);
         break;
 
     default:
-        printf("[%d-%02d-%02d  %02d:%02d] %s\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, message);
+        sprintf(new_message, LOG_DEFAULT_FORMAT, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, message);
+        vfprintf(stdout, new_message, varg);
         break;
     }
 
