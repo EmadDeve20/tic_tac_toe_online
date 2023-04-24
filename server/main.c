@@ -375,7 +375,7 @@ void delete_user(const int *socket_addr)
     
         if ((*userLists)->socketAddress == *socket_addr)
         {
-            strncat(username, (*userLists)->username, strlen((*userLists)->username));
+            sprintf(username, "%s", (*userLists)->username);
             delUser = *userLists;
             close(delUser->socketAddress);
             delUser = NULL;
@@ -395,7 +395,7 @@ void delete_user(const int *socket_addr)
             {   
                 delUser = curentUser;
                 prevUser->nextUser = delUser->nextUser;
-                strncat(username, curentUser->username, strlen(curentUser->username));
+                sprintf(username, "%s", (*userLists)->username);
                 close(delUser->socketAddress);
                 free(delUser);
             }
