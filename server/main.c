@@ -401,9 +401,7 @@ void delete_user(const int *socket_addr)
             }
         }
 
-        // TODO: Use this the log print
-        // log_print(&log_t, "LOGOUT USER: ", username_tmp);
-        printf("USER DELETED:%s\n", username);
+        log_print(&log_t, "the %s user Delete", username);
     }
 }
 
