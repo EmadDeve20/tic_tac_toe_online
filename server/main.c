@@ -774,7 +774,6 @@ void chage_port(const char  *port_string)
     port = atoi(port_string);
 }
 
-//TODO: this function has a big bug! try to solve it
 void log_print(const log_type *type, const char* message, ...)
 {   
     time_t t = time(NULL);
@@ -783,40 +782,31 @@ void log_print(const log_type *type, const char* message, ...)
     char new_message[1024] = {0};
     va_list varg;
     va_start(varg, message);
-    //printf("Messga %s\n", message);
-    while (message != NULL && (strlen(message) + strlen(new_message)) < 1024)
-    {   //printf("%s\n", message);
-        strncat(new_message, message, strlen(message));
-        strcat(new_message, " ");
-        message = va_arg(varg, const char*);
-    }
-
-    va_end(varg);
-
 
     switch (*type)
     {
     case OK:
-        printf(LOG_OK_FORMAT, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, new_message);
+        printf(LOG_OK_FORMAT, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, message);
         break;
     
     case WARNING:
-        printf(LOG_WARNING_FORMAT, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, new_message);
+        printf(LOG_WARNING_FORMAT, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, message);
         break;
     
     case ERROR:
-        printf(LOG_ERROR_FORMAT, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, new_message);
+        printf(LOG_ERROR_FORMAT, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, message);
         break;
     
     case INFO:
-        printf(LOG_INFO_FORMAT, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, new_message);
+        printf(LOG_INFO_FORMAT, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, message);
         break;
 
     default:
-        printf("[%d-%02d-%02d  %02d:%02d] %s\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, new_message);
+        printf("[%d-%02d-%02d  %02d:%02d] %s\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, message);
         break;
     }
 
+    va_end(varg);
     fflush(stdout);
 }
 
