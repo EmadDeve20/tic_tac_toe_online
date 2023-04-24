@@ -354,8 +354,8 @@ void insert_user(char *username, const int *sock)
     }
 
     log_t == OK ? 
-      log_print(&log_t, username, "user successfully created") : 
-      log_print(&log_t, "Memory is not available for new user creation or the ", username, " username is exist"); 
+      log_print(&log_t, "The user %s successfully created", username) : 
+      log_print(&log_t, "Memory is not available for new user creation or the %s", username, " username is exist"); 
 }
 
 /*
