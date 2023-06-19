@@ -385,44 +385,26 @@ void delete_user(const int *socket_addr)
         {   
             delUser = curentUser;
 
-            if (!IS_EMPTY(curentUser->nextUser))
-                prevUser->nextUser = delUser->nextUser;
-            else if(!IS_EMPTY(curentUser->nextUser) && !IS_EMPTY(prevUser))
-                prevUser->nextUser = NULL;
+            if (IS_EMPTY(prevUser))
+                *userLists = NULL;
+            else
+            {
+                if (!IS_EMPTY(curentUser->nextUser) && !IS_EMPTY(prevUser))
+                {
+                    prevUser->nextUser = curentUser->nextUser;
+                }
+
+                else if (IS_EMPTY(curentUser->nextUser) && !IS_EMPTY(prevUser))
+                {
+                    prevUser->nextUser = NULL;
+                }
+            }
 
             sprintf(username, "%s", curentUser->username);
             close(delUser->socketAddress);
             free(delUser);
             delUser = NULL;
         }
-
-        // if ((*userLists)->socketAddress == *socket_addr)
-        // {
-        //     sprintf(username, "%s", (*userLists)->username);
-        //     delUser = *userLists;
-        //     close(delUser->socketAddress);
-        //     delUser = NULL;
-        //     free(delUser);
-        //     *userLists = NULL;
-        // }
-        // else
-        // {   
-        //     curentUser = (*userLists)->nextUser;
-        //     while (curentUser->socketAddress == *socket_addr && !IS_EMPTY(curentUser))
-        //     {
-        //         prevUser = curentUser;
-        //         curentUser = curentUser->nextUser;
-        //     }
-            
-        //     if(!IS_EMPTY(curentUser))
-        //     {   
-        //         delUser = curentUser;
-        //         prevUser->nextUser = delUser->nextUser;
-        //         sprintf(username, "%s", (*userLists)->username);
-        //         close(delUser->socketAddress);
-        //         free(delUser);
-        //     }
-        // }
 
         log_print(&log_t, "the %s user Delete", username);
     }
