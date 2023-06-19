@@ -65,6 +65,7 @@ typedef struct users {
     char *username;
     player_status p_status;
     struct users* nextUser;
+    struct users* prevUser;
 } Users;
 
 typedef  Users* usersPtr;
