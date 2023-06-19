@@ -261,6 +261,8 @@ void setup_server()
         END_TWO:
             __users = &list_of_users;
     }
+
+    shutdown(master_socket, SHUT_RDWR);
 }
 
 /*
@@ -364,42 +366,63 @@ delete a username using his name
 void delete_user(const int *socket_addr)
 {
     usersPtr *userLists = &list_of_users;
-    usersPtr prevUser;
-    usersPtr curentUser;
-    usersPtr delUser;
+    usersPtr prevUser = NULL;
+    usersPtr curentUser = *userLists;
+    usersPtr delUser = NULL;
     char username[USERNAME_LENGTH];
+    memset(username, 0, USERNAME_LENGTH);
     log_type log_t = INFO;
     
     if(!IS_EMPTY(*userLists))
     {
-    
-        if ((*userLists)->socketAddress == *socket_addr)
+        while (curentUser->socketAddress != *socket_addr && !IS_EMPTY(curentUser))
         {
-            sprintf(username, "%s", (*userLists)->username);
-            delUser = *userLists;
-            close(delUser->socketAddress);
-            delUser = NULL;
-            free(delUser);
-            *userLists = NULL;
+            prevUser = curentUser;
+            curentUser = curentUser->nextUser;
         }
-        else
+
+        if(!IS_EMPTY(curentUser))
         {   
-            curentUser = (*userLists)->nextUser;
-            while (curentUser->socketAddress == *socket_addr && !IS_EMPTY(curentUser))
-            {
-                prevUser = curentUser;
-                curentUser = curentUser->nextUser;
-            }
-            
-            if(!IS_EMPTY(curentUser))
-            {   
-                delUser = curentUser;
+            delUser = curentUser;
+
+            if (!IS_EMPTY(curentUser->nextUser))
                 prevUser->nextUser = delUser->nextUser;
-                sprintf(username, "%s", (*userLists)->username);
-                close(delUser->socketAddress);
-                free(delUser);
-            }
+            else if(!IS_EMPTY(curentUser->nextUser) && !IS_EMPTY(prevUser))
+                prevUser->nextUser = NULL;
+
+            sprintf(username, "%s", curentUser->username);
+            close(delUser->socketAddress);
+            free(delUser);
+            delUser = NULL;
         }
+
+        // if ((*userLists)->socketAddress == *socket_addr)
+        // {
+        //     sprintf(username, "%s", (*userLists)->username);
+        //     delUser = *userLists;
+        //     close(delUser->socketAddress);
+        //     delUser = NULL;
+        //     free(delUser);
+        //     *userLists = NULL;
+        // }
+        // else
+        // {   
+        //     curentUser = (*userLists)->nextUser;
+        //     while (curentUser->socketAddress == *socket_addr && !IS_EMPTY(curentUser))
+        //     {
+        //         prevUser = curentUser;
+        //         curentUser = curentUser->nextUser;
+        //     }
+            
+        //     if(!IS_EMPTY(curentUser))
+        //     {   
+        //         delUser = curentUser;
+        //         prevUser->nextUser = delUser->nextUser;
+        //         sprintf(username, "%s", (*userLists)->username);
+        //         close(delUser->socketAddress);
+        //         free(delUser);
+        //     }
+        // }
 
         log_print(&log_t, "the %s user Delete", username);
     }
