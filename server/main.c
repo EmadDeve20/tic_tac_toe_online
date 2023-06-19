@@ -333,6 +333,7 @@ void insert_user(char *username, const int *sock)
         newUser->socketAddress = *sock;
         newUser->p_status = WAITING_FOR_A_PLAYER;
         newUser->nextUser = NULL;
+        newUser->prevUser = NULL;
 
         if (IS_EMPTY(list_of_users))
         {
@@ -340,11 +341,9 @@ void insert_user(char *username, const int *sock)
         }
         else
         {
-            usersPtr *users = &list_of_users; 
-            while (!IS_EMPTY((*users)->nextUser)) 
-                users = &(*users)->nextUser;
-
-            (*users)->nextUser = newUser;
+            newUser->nextUser = list_of_users;
+            list_of_users->prevUser = newUser;
+            list_of_users = newUser;
         }
 
         log_t = OK;
