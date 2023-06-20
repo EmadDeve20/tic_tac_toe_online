@@ -366,41 +366,51 @@ delete a username using his name
 void delete_user(const int *socket_addr)
 {
     usersPtr *userLists = &list_of_users;
-    usersPtr prevUser = NULL;
-    usersPtr curentUser = *userLists;
     usersPtr delUser = NULL;
+    int socket_found = 0;
     char username[USERNAME_LENGTH];
     memset(username, 0, USERNAME_LENGTH);
     log_type log_t = INFO;
     
     if(!IS_EMPTY(*userLists))
     {
-        while (curentUser->socketAddress != *socket_addr && !IS_EMPTY(curentUser))
+        while (!IS_EMPTY(*userLists))
         {
-            prevUser = curentUser;
-            curentUser = curentUser->nextUser;
+            if ((*userLists)->socketAddress == *socket_addr)
+            {
+                socket_found = 1;
+                break;
+            }
+            userLists = &(*userLists)->nextUser;
         }
 
-        if(!IS_EMPTY(curentUser))
+        if(!IS_EMPTY(*userLists) && socket_found)
         {   
-            delUser = curentUser;
+            delUser = *userLists;
 
-            if (IS_EMPTY(prevUser))
+            if (IS_EMPTY((*userLists)->nextUser) && IS_EMPTY((*userLists)->prevUser))
                 *userLists = NULL;
             else
             {
-                if (!IS_EMPTY(curentUser->nextUser) && !IS_EMPTY(prevUser))
+                if (!IS_EMPTY((*userLists)->nextUser) && !IS_EMPTY((*userLists)->prevUser))
                 {
-                    prevUser->nextUser = curentUser->nextUser;
+                    usersPtr prev_user = (*userLists)->prevUser, next_user = (*userLists)->nextUser;
+
+                    prev_user->nextUser = next_user;
+
+                    next_user->prevUser = prev_user;
+
+                    (*userLists)->prevUser =  prev_user;
                 }
 
-                else if (IS_EMPTY(curentUser->nextUser) && !IS_EMPTY(prevUser))
+                else if (!IS_EMPTY((*userLists)->nextUser) && IS_EMPTY((*userLists)->prevUser))
                 {
-                    prevUser->nextUser = NULL;
+                    *userLists = (*userLists)->nextUser;
+                    (*userLists)->prevUser = NULL;
                 }
             }
 
-            sprintf(username, "%s", curentUser->username);
+            sprintf(username, "%s", delUser->username);
             close(delUser->socketAddress);
             free(delUser);
             delUser = NULL;
