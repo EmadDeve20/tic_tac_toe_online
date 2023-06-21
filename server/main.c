@@ -82,6 +82,7 @@ typedef struct playground {
     unsigned short first_player_points;
     unsigned short secound_player_points;
     struct playground *nextPlayGround;
+    struct playground *prevPlayGround;
 } playGround;
 
 typedef playGround *playGroundPtr;
