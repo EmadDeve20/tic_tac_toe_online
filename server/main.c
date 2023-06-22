@@ -264,7 +264,6 @@ void setup_server()
             __users = &list_of_users;
     }
 
-    shutdown(master_socket, SHUT_RDWR);
 }
 
 /*
