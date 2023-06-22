@@ -96,7 +96,7 @@ char** requests_parser();
 void manage_requests(char** request_parsed, const int *sock);
 void insert_user(char *username, const int *sock);
 void delete_user(const int *socket_addr);
-void  find_a_player(const char *us_req, const int *sock);
+void find_a_player(const int *socket_address);
 void handle_disconnected_user(const int *socket_address);
 void create_a_playground(const usersPtr player1, const usersPtr player2);
 int delete_playground(const int *socket_addr);
@@ -312,7 +312,7 @@ void manage_requests(char** request_parsed, const int *sock)
 
     if (strcmp(request_parsed[0], FIND_PLAYER_REQUEST) == 0)
     {
-        find_a_player(request_parsed[1], sock);
+        find_a_player(sock);
         return;
     }
 }
@@ -424,7 +424,7 @@ void delete_user(const int *socket_addr)
 /*
 This function try to find a player
 */
-void find_a_player(const char *us_req, const int *sock)
+void find_a_player(const int *socket_address)
 {
     bool player_found = false;
     usersPtr *__users = &list_of_users;
@@ -432,23 +432,17 @@ void find_a_player(const char *us_req, const int *sock)
 
     while (!IS_EMPTY(*__users) && !IS_EMPTY((*__users)->nextUser))
     {
-        if ((*__users)->p_status == WAITING_FOR_A_PLAYER && (strcmp((*__users)->username, us_req)))
+        if ((*__users)->p_status == WAITING_FOR_A_PLAYER && (*__users)->socketAddress != *socket_address)
         {
             player2 = *__users;
             player2->p_status = PLAYING;
         }
-        if (strcmp((*__users)->username, us_req) == 0)
+        if ((*__users)->socketAddress == *socket_address)
         {
             if ((*__users)->p_status != PLAYING)
             {
                 player1 = *__users;
                 player1->p_status = PLAYING;
-            }
-            else
-            {
-                if (!IS_EMPTY(player2))
-                    player2->p_status = WAITING_FOR_A_PLAYER;
-                break;
             }
         }
         if (!IS_EMPTY(player1) && !IS_EMPTY(player2) && (player1->p_status == PLAYING && player2->p_status == PLAYING))
@@ -463,10 +457,10 @@ void find_a_player(const char *us_req, const int *sock)
         create_a_playground(player1, player2);
     }
 
-    if (player_found > 0)
-        send(*sock, PLAYER_FOUND_RESPONSE, strlen(PLAYER_FOUND_RESPONSE), 0);
+    if (player_found)
+        send(*socket_address, PLAYER_FOUND_RESPONSE, strlen(PLAYER_FOUND_RESPONSE), 0);
     else
-        send(*sock, PLAYER_NOT_FOUND_RESPONSE, strlen(PLAYER_FOUND_RESPONSE), 0);
+        send(*socket_address, PLAYER_NOT_FOUND_RESPONSE, strlen(PLAYER_NOT_FOUND_RESPONSE), 0);
 }
 
 // TODO: Test this function 
