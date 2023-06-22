@@ -22,7 +22,7 @@
 #define SELECT_REQUEST_FORMAT "SELECT %s %c %s \r\n" // SELECT $username $select $competitor
 #define SELECT_REQUEST_LENGTH ((USERNAME_LENGTH*2) + 20)
 #define PLAYGROUND_SIZE 9
-#define CLEAR_SCREEN system("clear");
+#define CLEAR_SCREEN clear_screen();
 #define PLAYER_FOUND_RESPONSE "PLAYER FK\r\n"
 #define PLAYER_NOT_FOUND_RESPONSE "PLAYER NF\r\n"
 
@@ -49,6 +49,7 @@ char** response_parser();
 void response_manager(char **response_parsed);
 void save_playground_status(const char *player, const char *competitor_name, const char playground_cp[PLAYGROUND_SIZE],
     unsigned short user_pt, unsigned short competitor_ps);
+void clear_screen();
 
 void draw_playground();
 static void signal_handler(int _);
@@ -112,7 +113,8 @@ void client_setup()
 
 void game_controller()
 {
-
+    CLEAR_SCREEN;
+    
     // printf("%s\n", try_to_login() ? "LOGIN TO SERVER" : "CAN NOT LOGIN TO SERVER! Maybe Your username is Exist! Try With another name");
 
     try_to_login() ? game_is_start = 1 : exit(EXIT_FAILURE);
@@ -276,4 +278,13 @@ void signal_handler(int _)
     {
         exit(_);
     }
+}
+
+void clear_screen()
+{
+    #ifdef __WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
 }
