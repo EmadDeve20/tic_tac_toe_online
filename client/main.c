@@ -29,16 +29,19 @@
 #define PLAYER_FOUND_RESPONSE "PLAYER FK\r\n"
 #define PLAYER_NOT_FOUND_RESPONSE "PLAYER NF\r\n"
 
+
 static volatile sig_atomic_t keep_running = 1;
 
 int port = 8013, sock = 0, client_fd, valread, game_is_start = 0;
 char server_address[1024];
-char username[USERNAME_LENGTH];
+char username[USERNAME_LENGTH] = {0};
 char competitor[USERNAME_LENGTH];
 char playground[PLAYGROUND_SIZE];
 struct sockaddr_in socket_address;
 char buffer[BUFFER_SIZE];
 unsigned short user_points, competitor_points; 
+
+#define CLEAR_BUFFER memset(buffer, '\0', BUFFER_SIZE);
 
 void initial_settings();
 void client_setup();
@@ -53,6 +56,7 @@ void response_manager(char **response_parsed);
 void save_playground_status(const char *player, const char *competitor_name, const char playground_cp[PLAYGROUND_SIZE],
     unsigned short user_pt, unsigned short competitor_ps);
 void clear_screen();
+void change_username();
 
 void draw_playground();
 static void signal_handler(int _);
@@ -82,6 +86,15 @@ void initial_settings()
     scanf("%d", &port);
     
 
+}
+
+void change_username()
+{   
+    memset(username, '\0', USERNAME_LENGTH);
+    printf("Enter your name: ");
+    fflush(stdout);
+    fgets(username, USERNAME_LENGTH, stdin);
+    close_end_of_string(username);
 }
 
 /*
@@ -120,7 +133,20 @@ void game_controller()
     
     // printf("%s\n", try_to_login() ? "LOGIN TO SERVER" : "CAN NOT LOGIN TO SERVER! Maybe Your username is Exist! Try With another name");
 
-    try_to_login() ? game_is_start = 1 : exit(EXIT_FAILURE);
+    int login_status = try_to_login(); 
+
+    // TODO: fix this! When the username is not valid this must happen!
+    while (login_status == -1)
+    {
+        change_username();
+        int login_status = try_to_login(); 
+    }
+    
+    if (login_status == 0)
+        exit(EXIT_FAILURE);
+    else
+        game_is_start = 1;
+
 
     if (!request_to_find_a_player())
     {
@@ -162,9 +188,11 @@ int try_to_login()
         {
             printf("this name exists please choose another name! \n");
             fflush(stdout);
+            return -1;
         }
     }
 
+    CLEAR_BUFFER;
     return 0;
 }
 
