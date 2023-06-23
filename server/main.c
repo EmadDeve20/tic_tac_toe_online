@@ -22,11 +22,13 @@
 #define FIND_PLAYER_REQUEST "FIND"
 #define RESTRICT_PARAS_CHAR " " // Actually space character
 #define LOGIN_STATUS_OK "LOGIN OK"
-#define LOGIN_STATUS_FAILED "LOGIN NK"
+#define LOGIN_STATUS_FAILED_MEMORY_SIZE "LOGIN NKM"
+#define LOGIN_STATUS_FAILED_NOT_VALID_USERNAME "LOGIN NKU"
 #define PLAYER_FOUND_RESPONSE "PLAYER FK\r\n"
 #define PLAYER_NOT_FOUND_RESPONSE "PLAYER NF\r\n"
 #define PLAYER_FOUND_RESPONSE_SIZE strlen(PLAYER_FOUND_RESPONSE)
-#define LOGIN_STATUS_SIZE 9
+#define LOGIN_OK_SIZE strlen(LOGIN_STATUS_OK)
+#define LOGIN_NOT_OK_SIZE strlen(LOGIN_STATUS_FAILED_MEMORY_SIZE)
 #define USERNAME_LENGTH 20
 #define GROUND_SIZE 9
 #define FINAL_SCORE 5
@@ -346,18 +348,26 @@ void insert_user(char *username, const int *sock)
             list_of_users = newUser;
         }
 
+        send(new_socket, LOGIN_STATUS_OK, LOGIN_OK_SIZE, 0);
+
         log_t = OK;
-        send(new_socket, LOGIN_STATUS_OK, LOGIN_STATUS_SIZE, 0);
+        log_print(&log_t, "The user %s successfully created", username);
     }
     else
     {
         log_t = ERROR;
-        send(new_socket, LOGIN_STATUS_FAILED, LOGIN_STATUS_SIZE, 0);
-    }
 
-    log_t == OK ? 
-      log_print(&log_t, "The user %s successfully created", username) : 
-      log_print(&log_t, "Memory is not available for new user creation or the %s", username, " username is exist"); 
+        if (IS_EMPTY(newUser) && IS_EMPTY(newUser->username))
+        {
+            send(new_socket, LOGIN_STATUS_FAILED_MEMORY_SIZE, LOGIN_NOT_OK_SIZE, 0);
+            log_print(&log_t, "There is not enough server memory to create a new user");
+        }
+        else
+        {
+            send(new_socket, LOGIN_STATUS_FAILED_NOT_VALID_USERNAME, LOGIN_NOT_OK_SIZE, 0);
+            log_print(&log_t, "The %s username exist so this is not valid!", username);
+        }
+    }
 }
 
 /*
