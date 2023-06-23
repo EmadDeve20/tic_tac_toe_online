@@ -14,7 +14,10 @@
 #define PLAYGROUND_RESPONSE "PLAYGROUND"
 #define LOGIN_REQUEST_SIZE  9 + USERNAME_LENGTH
 #define LOGIN_STATUS_OK "LOGIN OK"
-#define LOGIN_STATUS_SIZE 8
+#define LOGIN_STATUS_FAILED_MEMORY_SIZE "LOGIN NKM"
+#define LOGIN_STATUS_FAILED_NOT_VALID_USERNAME "LOGIN NKU"
+#define LOGIN_OK_SIZE strlen(LOGIN_STATUS_OK)
+#define LOGIN_NOT_OK_SIZE strlen(LOGIN_STATUS_FAILED_MEMORY_SIZE)
 #define LOGIN_REQUEST_FORMAT "LOGIN %s \r\n" // LOGIN $username
 #define LOGOUT_REQUEST_FORMAT "LOGOUT %s \r\n" // LOGOUT $username
 #define FIND_PLAYER_REQUEST_FORMAT "FIND %s \r\n" // FIND $username 
@@ -143,10 +146,23 @@ int try_to_login()
     send(sock, login_request, strlen(login_request), 0);
 
     recv(sock, buffer, BUFFER_SIZE, 0);
-    if (strlen(buffer) >= LOGIN_STATUS_SIZE)
+    
+    if ((strlen(buffer) == LOGIN_OK_SIZE) && (strcmp(buffer, LOGIN_STATUS_OK) == 0))
+        return 1;
+
+    else if (strlen(buffer) == LOGIN_NOT_OK_SIZE)
     {
-        if (strcmp(buffer, LOGIN_STATUS_OK) == 0)
-            return 1;
+        if (strcmp(buffer, LOGIN_STATUS_FAILED_MEMORY_SIZE) == 0)
+        {
+            printf("the server memory is not enough! please try next time.\n");
+            fflush(stdout);
+        }
+
+        else if (strcmp(buffer, LOGIN_STATUS_FAILED_NOT_VALID_USERNAME) == 0)
+        {
+            printf("this name exists please choose another name! \n");
+            fflush(stdout);
+        }
     }
 
     return 0;
