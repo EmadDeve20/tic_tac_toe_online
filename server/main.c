@@ -92,6 +92,18 @@ typedef playGround *playGroundPtr;
 //initialize the playground as LinkedList
 playGroundPtr mainGround = NULL;
 
+//create a Queue for users' requests to find a player
+struct queue_of_players{
+    
+    usersPtr player;
+    struct queue_of_players* next;
+};
+
+typedef struct queue_of_players* QueueOfPlayers;
+
+QueueOfPlayers  front = NULL;
+QueueOfPlayers  rear = NULL;
+
 void print_welcome_message();
 void setup_server();
 char** requests_parser();
