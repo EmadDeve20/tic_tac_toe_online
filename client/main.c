@@ -152,14 +152,21 @@ void game_controller()
     puts("the Server Searching to find a player  ...");
     fflush(stdout);
 
-    while (keep_running)
-    {
-        if (check_player_found()) break;
-        // SEND and RECEIVE data BETWEEN server and client
-    }
+    WAIT_FOR_PLAYER:
+    
+    if (check_player_found())
+        goto START_GAME;
+    else
+        goto START_GAME;
+
+    START_GAME:
 
     puts("a player found!");
     fflush(stdout);
+    while (keep_running)
+    {
+        // SEND and RECEIVE data BETWEEN server and client
+    }
 }
 
 /*
