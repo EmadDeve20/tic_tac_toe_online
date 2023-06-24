@@ -47,7 +47,7 @@ void initial_settings();
 void client_setup();
 void game_controller();
 int try_to_login();
-int request_to_find_a_player();
+void request_to_find_a_player();
 void close_end_of_string(char *text);
 int select_player_request(const char select);
 char selected_number();
@@ -148,11 +148,9 @@ void game_controller()
         game_is_start = 1;
 
 
-    if (!request_to_find_a_player())
-    {
-        puts("the Server Searching to find a player  ...");
-        fflush(stdout);
-    }
+    request_to_find_a_player();
+    puts("the Server Searching to find a player  ...");
+    fflush(stdout);
 
     while (keep_running)
     {
@@ -199,20 +197,13 @@ int try_to_login()
 
 /*
 send the find a player request
-@return: If player Found Return 1, If not return 0
 */
-int request_to_find_a_player()
+void request_to_find_a_player()
 {
     char find_request[FIND_PLAYER_REQUEST_LENGTH];
-    char RESPONSE[BUFFER_SIZE];
 
     sprintf(find_request, FIND_PLAYER_REQUEST_FORMAT, username);
     send(sock, find_request, strlen(find_request), 0);
-    recv(sock, RESPONSE, BUFFER_SIZE, 0);
-
-    if (strcmp(RESPONSE, PLAYER_FOUND_RESPONSE) == 0)
-        return 1;
-    return 0;
 }
 
 
