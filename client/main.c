@@ -152,12 +152,13 @@ void game_controller()
     puts("the Server Searching to find a player  ...");
     fflush(stdout);
 
+    //TODO: this is like endless loop beacuse the recive function dont set timeout!
     WAIT_FOR_PLAYER:
     
     if (check_player_found())
         goto START_GAME;
     else
-        goto START_GAME;
+        goto WAIT_FOR_PLAYER;
 
     START_GAME:
 
