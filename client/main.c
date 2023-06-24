@@ -26,8 +26,7 @@
 #define SELECT_REQUEST_LENGTH ((USERNAME_LENGTH*2) + 20)
 #define PLAYGROUND_SIZE 9
 #define CLEAR_SCREEN clear_screen();
-#define PLAYER_FOUND_RESPONSE "PLAYER FK\r\n"
-#define PLAYER_NOT_FOUND_RESPONSE "PLAYER NF\r\n"
+#define PLAYER_FOUND_RESPONSE "PLAYER FOUND"
 
 
 static volatile sig_atomic_t keep_running = 1;
