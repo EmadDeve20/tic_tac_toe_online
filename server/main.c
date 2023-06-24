@@ -122,6 +122,8 @@ void perform_player_selection(const char *username_1, const unsigned short selec
 int check_who_is_winner(playGroundPtr pg);
 void send_playground_data(const playGroundPtr pg);
 int reset_playground(playGroundPtr pg);
+void enqueue(usersPtr player);
+void dequeue(usersPtr *player_one, usersPtr *player_two);
 
 int main(int argc, char **argv)
 {
@@ -777,6 +779,50 @@ int reset_playground(playGroundPtr pg)
 
     return 0;
 }
+
+
+void enqueue(usersPtr player)
+{
+    QueueOfPlayers q = malloc(sizeof(struct queue_of_players));
+    if (!IS_EMPTY(q))
+    {
+        q->player = player;
+        q->next = NULL;
+
+        if (rear == NULL)
+        {
+            front = q;
+            rear = q;
+        }
+        else
+        {
+            rear->next = q;
+            rear = rear->next;
+        }
+    }
+}
+
+// get a pointer for each player (player number one and number two)
+// if there are two players waiting in the queue, it will value both of them 
+// Otherwise, set both of them to NULL
+void dequeue(usersPtr *player_one, usersPtr *player_two)
+{
+    if ((!IS_EMPTY(front) && !IS_EMPTY(rear)) && (front->player->socketAddress != rear->player->socketAddress))
+    {
+        *player_one = front;
+        front = front->next;
+
+        *player_two = front;
+        front = front->next;
+    }
+
+    else
+    {
+        *player_one = NULL;
+        *player_two = NULL;
+    }
+}
+
 
 // the new username is valid??
 int new_username_is_valid(char *new_username)
