@@ -41,7 +41,7 @@ struct sockaddr_in socket_address;
 char buffer[BUFFER_SIZE];
 unsigned short user_points, competitor_points; 
 
-#define CLEAR_BUFFER memset(buffer, '\0', BUFFER_SIZE);
+#define CLEAR_BUFFER memset(buffer, '\0', BUFFER_SIZE)
 
 void initial_settings();
 void client_setup();
@@ -57,6 +57,7 @@ void save_playground_status(const char *player, const char *competitor_name, con
     unsigned short user_pt, unsigned short competitor_ps);
 void clear_screen();
 void change_username();
+int check_player_found();
 
 void draw_playground();
 static void signal_handler(int _);
@@ -154,9 +155,12 @@ void game_controller()
 
     while (keep_running)
     {
+        if (check_player_found()) break;
         // SEND and RECEIVE data BETWEEN server and client
     }
 
+    puts("a player found!");
+    fflush(stdout);
 }
 
 /*
@@ -206,6 +210,18 @@ void request_to_find_a_player()
     send(sock, find_request, strlen(find_request), 0);
 }
 
+
+int check_player_found()
+{
+    recv(sock, buffer, BUFFER_SIZE, 0);
+
+    if ((strlen(buffer) == strlen(PLAYER_FOUND_RESPONSE)) && (strcmp(buffer, PLAYER_FOUND_RESPONSE) == 0))
+        return 1;
+
+    return 0;
+    CLEAR_BUFFER;
+
+}
 
 int select_player_request(const char select)
 {
