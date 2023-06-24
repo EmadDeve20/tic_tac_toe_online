@@ -449,41 +449,29 @@ This function try to find a player
 */
 void find_a_player(const int *socket_address)
 {
-    bool player_found = false;
     usersPtr *__users = &list_of_users;
     usersPtr player1 = NULL, player2 = NULL;
 
-    while (!IS_EMPTY(*__users) && !IS_EMPTY((*__users)->nextUser))
+    while (!IS_EMPTY(*__users))
     {
-        if ((*__users)->p_status == WAITING_FOR_A_PLAYER && (*__users)->socketAddress != *socket_address)
-        {
-            player2 = *__users;
-            player2->p_status = PLAYING;
-        }
         if ((*__users)->socketAddress == *socket_address)
         {
-            if ((*__users)->p_status != PLAYING)
-            {
-                player1 = *__users;
-                player1->p_status = PLAYING;
-            }
-        }
-        if (!IS_EMPTY(player1) && !IS_EMPTY(player2) && (player1->p_status == PLAYING && player2->p_status == PLAYING))
+            enqueue(*__users);
             break;
+        }
 
         __users = &(*__users)->nextUser; 
     }
 
-    if (!IS_EMPTY(player1) && !IS_EMPTY(player2) && (player1->p_status == PLAYING && player2->p_status == PLAYING))
-    {
-        player_found = true;
-        create_a_playground(player1, player2);
-    }
+    dequeue(&player1, &player2);
 
-    if (player_found)
-        send(*socket_address, PLAYER_FOUND_RESPONSE, strlen(PLAYER_FOUND_RESPONSE), 0);
-    else
-        send(*socket_address, PLAYER_NOT_FOUND_RESPONSE, strlen(PLAYER_NOT_FOUND_RESPONSE), 0);
+    if (!IS_EMPTY(player1) && !IS_EMPTY(player2))
+    {   
+        create_a_playground(player1, player2);
+
+        send(player1->socketAddress, PLAYER_FOUND_RESPONSE, strlen(PLAYER_FOUND_RESPONSE), 0);
+        send(player2->socketAddress, PLAYER_FOUND_RESPONSE, strlen(PLAYER_FOUND_RESPONSE), 0);
+    }
 }
 
 // TODO: Test this function 
@@ -809,10 +797,10 @@ void dequeue(usersPtr *player_one, usersPtr *player_two)
 {
     if ((!IS_EMPTY(front) && !IS_EMPTY(rear)) && (front->player->socketAddress != rear->player->socketAddress))
     {
-        *player_one = front;
+        *player_one = front->player;
         front = front->next;
 
-        *player_two = front;
+        *player_two = front->player;
         front = front->next;
     }
 
