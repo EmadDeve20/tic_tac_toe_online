@@ -482,12 +482,13 @@ void handle_disconnected_user(const int *socket_address)
 
 }
 
-//TODO: test this function
-//TODO: add logs for this
+
 void create_a_playground(const usersPtr player1, const usersPtr player2)
 {
     playGroundPtr new_playground;
     new_playground = malloc(sizeof(playGround));
+
+    log_type log_t = OK;
 
     if (new_playground != NULL)
     {
@@ -499,6 +500,13 @@ void create_a_playground(const usersPtr player1, const usersPtr player2)
         new_playground->first_player_points = new_playground->secound_player_points = 0; 
         new_playground->nextPlayGround = mainGround;
         mainGround = new_playground;
+
+        log_print(&log_t, "create a playground. players: %s and %s", new_playground->player_one->username, new_playground->player_two->username);
+    }
+    else
+    {
+        log_t = ERROR;
+        log_print(&log_t, "the memory does not have  free space to create a playground");
     }
 
 }
