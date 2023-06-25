@@ -25,6 +25,7 @@
 #define LOGOUT_REQUEST_FORMAT "LOGOUT %s \r\n" // LOGOUT $username
 #define FIND_PLAYER_REQUEST_FORMAT "FIND %s \r\n" // FIND $username 
 #define FIND_PLAYER_REQUEST_LENGTH 29
+#define GET_PLAYGROUND_REQUEST "GET PLAYGROUND"
 #define SELECT_REQUEST_FORMAT "SELECT %s %c %s \r\n" // SELECT $username $select $competitor
 #define SELECT_REQUEST_LENGTH ((USERNAME_LENGTH*2) + 20)
 #define PLAYGROUND_SIZE 9
