@@ -307,6 +307,12 @@ void response_manager(char *buffer)
         }
     }
 
+    if (strlen(buffer) == strlen(PLAYER_FOUND_RESPONSE) && strcmp(buffer, PLAYER_FOUND_RESPONSE) == 0)
+    {
+        printf("Player Found! \n");
+        fflush(stdout);
+    }
+
     
 
     // if (strcmp(PLAYGROUND_RESPONSE, response_parsed[0]) == 0)
