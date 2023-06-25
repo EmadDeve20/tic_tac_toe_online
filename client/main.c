@@ -70,7 +70,12 @@ void *listener_to_server()
 {
     while (1)
     {
-        printf("Listener Working\n");
+        recv(sock, buffer, BUFFER_SIZE, 0);
+        if (strlen(buffer) != 0)
+        {
+            puts(buffer);
+            CLEAR_BUFFER;
+        }
     }
 }
 
@@ -188,16 +193,6 @@ void game_controller()
     request_to_find_a_player();
     puts("the Server Searching to find a player  ...");
     fflush(stdout);
-
-    //TODO: this is like endless loop beacuse the recive function dont set timeout!
-    WAIT_FOR_PLAYER:
-    
-    if (check_player_found())
-        goto START_GAME;
-    else
-        goto WAIT_FOR_PLAYER;
-
-    START_GAME:
 
     puts("a player found!");
     fflush(stdout);
