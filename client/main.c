@@ -6,6 +6,9 @@
 #include <unistd.h>
 #include <signal.h>
 #include <ctype.h>
+#include <pthread.h>
+#include <errno.h>
+
 
 #define BUFFER_SIZE 1024
 #define USERNAME_LENGTH 20
@@ -31,6 +34,8 @@
 
 static volatile sig_atomic_t keep_running = 1;
 
+pthread_t thread;
+pthread_attr_t pthread_custom_attr;
 int port = 8013, sock = 0, client_fd, valread, game_is_start = 0;
 char server_address[1024];
 char username[USERNAME_LENGTH] = {0};
@@ -43,7 +48,7 @@ unsigned short user_points, competitor_points;
 #define CLEAR_BUFFER memset(buffer, '\0', BUFFER_SIZE)
 
 void initial_settings();
-void client_setup();
+int client_setup();
 void game_controller();
 int try_to_login();
 void request_to_find_a_player();
@@ -61,14 +66,22 @@ int check_player_found();
 void draw_playground();
 static void signal_handler(int _);
 
+void *listener_to_server()
+{
+    while (1)
+    {
+        printf("Listener Working\n");
+    }
+}
+
 
 int main()
 {
     signal(SIGINT, signal_handler);
     initial_settings();
-    client_setup();
+    if (!client_setup()) return 1;
     game_controller();
-
+    pthread_join(thread, NULL);
 }
 
 // this is a form for entering username and server details
@@ -102,8 +115,30 @@ void change_username()
     and 
     start game!
 */
-void client_setup()
-{
+int client_setup()
+{   
+    errno = pthread_attr_init(&pthread_custom_attr);
+    if (errno != 0)
+    {
+        puts("pthread_attr_init");
+        return 0;
+    }
+
+
+    errno = pthread_create(&thread, &pthread_custom_attr, listener_to_server, NULL);
+    if (errno != 0)
+    {
+        puts("Fail to create thread");
+        return 0;
+    }
+    
+    errno = pthread_attr_destroy(&pthread_custom_attr);
+    if (errno != 0)
+    {
+      puts("pthread_attr_destroy");
+      return 0;
+    }
+
     socket_address.sin_family = AF_INET;
     socket_address.sin_port = htons(port);
 
@@ -125,6 +160,8 @@ void client_setup()
         perror("Connection Faild!\n");
         exit(EXIT_FAILURE);
     }
+
+    return 1;
 }
 
 void game_controller()
@@ -336,6 +373,8 @@ void signal_handler(int _)
     {
         exit(_);
     }
+
+    pthread_cancel(thread);
 }
 
 void clear_screen()
