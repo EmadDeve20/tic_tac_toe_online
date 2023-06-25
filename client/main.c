@@ -68,7 +68,7 @@ void change_username();
 void draw_playground();
 static void signal_handler(int _);
 
-void *listener_to_server(void *arg)
+void *server_listener(void *arg)
 {   
     int sock = *((int *)arg);
 
@@ -161,7 +161,7 @@ int client_setup()
         exit(EXIT_FAILURE);
     }
 
-    errno = pthread_create(&thread, &pthread_custom_attr, listener_to_server, (void *)&sock);
+    errno = pthread_create(&thread, &pthread_custom_attr, server_listener, (void *)&sock);
     if (errno != 0)
     {
         puts("Fail to create thread");
