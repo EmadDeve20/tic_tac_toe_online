@@ -36,13 +36,15 @@ static volatile sig_atomic_t keep_running = 1;
 
 pthread_t thread;
 pthread_attr_t pthread_custom_attr;
-int port = 8013, sock = 0, client_fd, valread, game_is_start = 0;
+
+// login status 0 means memory is not enough, login status 1 means login successful, and login status -1 means this username exists
+int port = 8013, sock = 0, client_fd, valread, game_is_start = 0, login_status = 2;
+
 char server_address[1024];
 char username[USERNAME_LENGTH] = {0};
 char competitor[USERNAME_LENGTH];
 char playground[PLAYGROUND_SIZE];
 struct sockaddr_in socket_address;
-char buffer[BUFFER_SIZE];
 unsigned short user_points, competitor_points; 
 
 #define CLEAR_BUFFER memset(buffer, '\0', BUFFER_SIZE)
@@ -50,30 +52,35 @@ unsigned short user_points, competitor_points;
 void initial_settings();
 int client_setup();
 void game_controller();
-int try_to_login();
+void send_login_request();
 void request_to_find_a_player();
 void close_end_of_string(char *text);
 int select_player_request(const char select);
 char selected_number();
-char** response_parser();
-void response_manager(char **response_parsed);
+// char** response_parser();
+void response_manager(char *buffer);
 void save_playground_status(const char *player, const char *competitor_name, const char playground_cp[PLAYGROUND_SIZE],
     unsigned short user_pt, unsigned short competitor_ps);
 void clear_screen();
 void change_username();
-int check_player_found();
+// int check_player_found();
 
 void draw_playground();
 static void signal_handler(int _);
 
-void *listener_to_server()
-{
+void *listener_to_server(void *arg)
+{   
+    int sock = *((int *)arg);
+
+    char buffer[BUFFER_SIZE] = {0};
+
     while (1)
     {
         recv(sock, buffer, BUFFER_SIZE, 0);
+
         if (strlen(buffer) != 0)
         {
-            puts(buffer);
+            response_manager(buffer);
             CLEAR_BUFFER;
         }
     }
@@ -130,19 +137,7 @@ int client_setup()
     }
 
 
-    errno = pthread_create(&thread, &pthread_custom_attr, listener_to_server, NULL);
-    if (errno != 0)
-    {
-        puts("Fail to create thread");
-        return 0;
-    }
     
-    errno = pthread_attr_destroy(&pthread_custom_attr);
-    if (errno != 0)
-    {
-      puts("pthread_attr_destroy");
-      return 0;
-    }
 
     socket_address.sin_family = AF_INET;
     socket_address.sin_port = htons(port);
@@ -166,22 +161,38 @@ int client_setup()
         exit(EXIT_FAILURE);
     }
 
+    errno = pthread_create(&thread, &pthread_custom_attr, listener_to_server, (void *)&sock);
+    if (errno != 0)
+    {
+        puts("Fail to create thread");
+        return 0;
+    }
+    
+    errno = pthread_attr_destroy(&pthread_custom_attr);
+    if (errno != 0)
+    {
+      puts("pthread_attr_destroy");
+      return 0;
+    }
+
     return 1;
 }
 
 void game_controller()
 {
     CLEAR_SCREEN;
-    
-    // printf("%s\n", try_to_login() ? "LOGIN TO SERVER" : "CAN NOT LOGIN TO SERVER! Maybe Your username is Exist! Try With another name");
+    send_login_request();
 
-    int login_status = try_to_login(); 
+    // printf("%s\n", send_login_request() ? "LOGIN TO SERVER" : "CAN NOT LOGIN TO SERVER! Maybe Your username is Exist! Try With another name");
 
     // TODO: fix this! When the username is not valid this must happen!
+
+    while (login_status == 2) {/* Wait until the login_status number changes */}
+
     while (login_status == -1)
     {
         change_username();
-        int login_status = try_to_login(); 
+        send_login_request(); 
     }
     
     if (login_status == 0)
@@ -206,35 +217,11 @@ void game_controller()
 This function is for trying to login with a new Account!
 actually the account with the name parameter
 */
-int try_to_login()
+void send_login_request()
 {   
     char login_request[LOGIN_REQUEST_SIZE];
     sprintf(login_request, LOGIN_REQUEST_FORMAT, username);
     send(sock, login_request, strlen(login_request), 0);
-
-    recv(sock, buffer, BUFFER_SIZE, 0);
-    
-    if ((strlen(buffer) == LOGIN_OK_SIZE) && (strcmp(buffer, LOGIN_STATUS_OK) == 0))
-        return 1;
-
-    else if (strlen(buffer) == LOGIN_NOT_OK_SIZE)
-    {
-        if (strcmp(buffer, LOGIN_STATUS_FAILED_MEMORY_SIZE) == 0)
-        {
-            printf("the server memory is not enough! please try next time.\n");
-            fflush(stdout);
-        }
-
-        else if (strcmp(buffer, LOGIN_STATUS_FAILED_NOT_VALID_USERNAME) == 0)
-        {
-            printf("this name exists please choose another name! \n");
-            fflush(stdout);
-            return -1;
-        }
-    }
-
-    CLEAR_BUFFER;
-    return 0;
 }
 
 
@@ -250,17 +237,17 @@ void request_to_find_a_player()
 }
 
 
-int check_player_found()
-{
-    recv(sock, buffer, BUFFER_SIZE, 0);
+// int check_player_found()
+// {
+//     recv(sock, buffer, BUFFER_SIZE, 0);
 
-    if ((strlen(buffer) == strlen(PLAYER_FOUND_RESPONSE)) && (strcmp(buffer, PLAYER_FOUND_RESPONSE) == 0))
-        return 1;
+//     if ((strlen(buffer) == strlen(PLAYER_FOUND_RESPONSE)) && (strcmp(buffer, PLAYER_FOUND_RESPONSE) == 0))
+//         return 1;
 
-    return 0;
-    CLEAR_BUFFER;
+//     return 0;
+//     CLEAR_BUFFER;
 
-}
+// }
 
 int select_player_request(const char select)
 {
@@ -279,32 +266,54 @@ char selected_number()
     return s;
 }
 
-char** response_parser()
-{
-    char *response_slice; 
-    char **parsed = malloc(10 * sizeof(char*));
+// char** response_parser()
+// {
+//     char *response_slice; 
+//     char **parsed = malloc(10 * USERNAME_LENGTH);
 
-    response_slice = strtok(buffer, RESTRICT_PARAS_CHAR);
+//     response_slice = strtok(buffer, RESTRICT_PARAS_CHAR);
 
-    int parsed_idx = 0;
+//     int parsed_idx = 0;
 
-    while ((response_slice != NULL) && parsed_idx < 10)
+//     while ((response_slice != NULL) && parsed_idx < 10)
+//     {
+//         parsed[parsed_idx] = response_slice;
+//         response_slice = strtok(NULL, RESTRICT_PARAS_CHAR);
+//         parsed_idx++;
+//     }
+
+//     return parsed; 
+// }
+
+void response_manager(char *buffer)
+{   
+    if (strlen(buffer) == LOGIN_OK_SIZE && strcmp(buffer, LOGIN_STATUS_OK) == 0)
+        login_status = 1;
+    
+    if (strlen(buffer) == LOGIN_NOT_OK_SIZE)
     {
-        parsed[parsed_idx] = response_slice;
-        response_slice = strtok(NULL, RESTRICT_PARAS_CHAR);
-        parsed_idx++;
+        if (strcmp(buffer, LOGIN_STATUS_FAILED_MEMORY_SIZE) == 0)
+        {
+            login_status = 0;
+            printf("the server memory is not enough! please try next time.\n");
+            fflush(stdout);
+        }
+
+        else if (strcmp(buffer, LOGIN_STATUS_FAILED_MEMORY_SIZE) == 0)
+        {
+            login_status = -1;
+            printf("this name exists please choose another name! \n");
+            fflush(stdout);
+        }
     }
 
-    return parsed; 
-}
+    
 
-void response_manager(char **response_parsed)
-{
-    if (strcmp(PLAYGROUND_RESPONSE, response_parsed[0]) == 0)
-    {
-        save_playground_status(response_parsed[1], response_parsed[2], response_parsed[3],
-        atoi(response_parsed[4]), atoi(response_parsed[5]));
-    }
+    // if (strcmp(PLAYGROUND_RESPONSE, response_parsed[0]) == 0)
+    // {
+    //     save_playground_status(response_parsed[1], response_parsed[2], response_parsed[3],
+    //     atoi(response_parsed[4]), atoi(response_parsed[5]));
+    // }
 }
 
 void save_playground_status(const char *player, const char *competitor_name, const char playground_cp[PLAYGROUND_SIZE], 
