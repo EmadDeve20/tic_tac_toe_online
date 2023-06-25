@@ -6,7 +6,7 @@ WORKDIR /app
 
 COPY ./main.c .
 
-RUN gcc main.c -o client
+RUN gcc main.c -o client -lpthread
 
 
 FROM debian
