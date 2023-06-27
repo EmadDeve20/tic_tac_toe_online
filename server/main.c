@@ -30,7 +30,7 @@
 #define LOGIN_OK_SIZE strlen(LOGIN_STATUS_OK)
 #define LOGIN_NOT_OK_SIZE strlen(LOGIN_STATUS_FAILED_MEMORY_SIZE)
 #define USERNAME_LENGTH 20
-#define GROUND_SIZE 9
+#define GROUND_SIZE 10
 #define FINAL_SCORE 5
 
 #define LOG_OK_FORMAT               "\033[0;37m[%d-%02d-%02d  %02d:%02d] \033[0;32m%s\n\033[0m"
@@ -39,7 +39,7 @@
 #define LOG_INFO_FORMAT             "\033[0;37m[%d-%02d-%02d  %02d:%02d] \033[0;34m%s\n\033[0m"
 #define LOG_DEFAULT_FORMAT          "[%d-%02d-%02d  %02d:%02d] %s\n"
 
-#define PLAYGROUND_FORMAT           "PLAYGROUND %s %s %s %d %d \r\n"
+#define PLAYGROUND_FORMAT           "PLAYGROUND %s%s%s %d %d \r\n"
 #define PLAYGROUND_RESPONSE_SIZE ((USERNAME_LENGTH*2) + GROUND_SIZE + 30) 
 
 typedef enum LogMessageType
@@ -493,7 +493,8 @@ void create_a_playground(const usersPtr player1, const usersPtr player2)
 
     if (new_playground != NULL)
     {
-        memset(new_playground->ground, '-', GROUND_SIZE);
+        memset(new_playground->ground, '-', GROUND_SIZE-1);
+        new_playground->ground[GROUND_SIZE-1] = '\0';
         new_playground->player_one = player1;
         new_playground->player_two = player2;
         new_playground->player_one_char =  rand() % 2 ? 'X' : 'O';
@@ -502,6 +503,7 @@ void create_a_playground(const usersPtr player1, const usersPtr player2)
         new_playground->nextPlayGround = mainGround;
         mainGround = new_playground;
 
+        send_playground_data(new_playground);
         log_print(&log_t, "create a playground. players: %s and %s", new_playground->player_one->username, new_playground->player_two->username);
     }
     else
@@ -740,17 +742,16 @@ int check_who_is_winner(playGroundPtr pg)
     return 0;
 }
 
-//TODO: I must test this Function!
 void send_playground_data(const playGroundPtr pg)
 {
 
-    char playground_data_one[PLAYGROUND_RESPONSE_SIZE];
-    char playground_data_two[PLAYGROUND_RESPONSE_SIZE];
+    char playground_data_one[PLAYGROUND_RESPONSE_SIZE] = {0};
+    char playground_data_two[PLAYGROUND_RESPONSE_SIZE] = {0};
 
     sprintf(playground_data_one, PLAYGROUND_FORMAT, pg->player_one->username, pg->player_two->username, 
         pg->ground, pg->first_player_points, pg->secound_player_points);
     
-    sprintf(playground_data_one, PLAYGROUND_FORMAT, pg->player_two->username, pg->player_one->username, 
+    sprintf(playground_data_two, PLAYGROUND_FORMAT, pg->player_two->username, pg->player_one->username, 
         pg->ground, pg->secound_player_points, pg->first_player_points);
     
     send(pg->player_one->socketAddress, playground_data_one, PLAYGROUND_RESPONSE_SIZE, 0);
