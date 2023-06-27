@@ -8,6 +8,7 @@
 #include <ctype.h>
 #include <pthread.h>
 #include <errno.h>
+#include <regex.h>
 
 
 #define BUFFER_SIZE 1024
@@ -32,7 +33,7 @@
 #define CLEAR_SCREEN clear_screen();
 #define PLAYER_FOUND_RESPONSE "PLAYER FOUND"
 
-
+regex_t reegex;
 static volatile sig_atomic_t keep_running = 1;
 
 pthread_t thread;
@@ -288,33 +289,46 @@ char selected_number()
 
 void response_manager(char *buffer)
 {   
-    if (strlen(buffer) == LOGIN_OK_SIZE && strcmp(buffer, LOGIN_STATUS_OK) == 0)
-        login_status = 1;
-    
-    if (strlen(buffer) == LOGIN_NOT_OK_SIZE)
+    int regex_value;
+    regex_value = regcomp(&reegex, "^PLAYGROUND.*", 0);
+    regex_value = regexec(&reegex, buffer, 0, NULL, 0);
+
+    // match
+    if (regex_value == 0) 
+    {   
+        // TODO: get the playground and draw it in terminal display
+        printf("\n\nCreate A PlayeGround!!!!!\n\n");
+    }
+    else // not match
     {
-        if (strcmp(buffer, LOGIN_STATUS_FAILED_MEMORY_SIZE) == 0)
+
+        if (strlen(buffer) == LOGIN_OK_SIZE && strcmp(buffer, LOGIN_STATUS_OK) == 0)
+            login_status = 1;
+        
+        if (strlen(buffer) == LOGIN_NOT_OK_SIZE)
         {
-            login_status = 0;
-            printf("the server memory is not enough! please try next time.\n");
+            if (strcmp(buffer, LOGIN_STATUS_FAILED_MEMORY_SIZE) == 0)
+            {
+                login_status = 0;
+                printf("the server memory is not enough! please try next time.\n");
+                fflush(stdout);
+            }
+
+            else if (strcmp(buffer, LOGIN_STATUS_FAILED_MEMORY_SIZE) == 0)
+            {
+                login_status = -1;
+                printf("this name exists please choose another name! \n");
+                fflush(stdout);
+            }
+        }
+
+        if (strlen(buffer) == strlen(PLAYER_FOUND_RESPONSE) && strcmp(buffer, PLAYER_FOUND_RESPONSE) == 0)
+        {
+            printf("Player Found! \n");
             fflush(stdout);
         }
 
-        else if (strcmp(buffer, LOGIN_STATUS_FAILED_MEMORY_SIZE) == 0)
-        {
-            login_status = -1;
-            printf("this name exists please choose another name! \n");
-            fflush(stdout);
-        }
-    }
-
-    if (strlen(buffer) == strlen(PLAYER_FOUND_RESPONSE) && strcmp(buffer, PLAYER_FOUND_RESPONSE) == 0)
-    {
-        printf("Player Found! \n");
-        fflush(stdout);
-    }
-
-    
+    }    
 
     // if (strcmp(PLAYGROUND_RESPONSE, response_parsed[0]) == 0)
     // {
