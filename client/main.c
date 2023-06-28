@@ -393,7 +393,7 @@ void draw_playground()
     
     for (int i = 0; i < PLAYGROUND_SIZE; i++)
     {
-        printf("%c ", playground[i]);
+        printf("\t%c", playground[i]);
         
         if ((i + 1) % 3 == 0)
             printf("\n");
