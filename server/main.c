@@ -805,12 +805,19 @@ void enqueue(usersPtr player)
 void dequeue(usersPtr *player_one, usersPtr *player_two)
 {
     if ((!IS_EMPTY(front) && !IS_EMPTY(rear)) && (front->player->socketAddress != rear->player->socketAddress))
-    {
+    {   
+        QueueOfPlayers delete_queue = front;
         *player_one = front->player;
         front = front->next;
+        free(delete_queue);
 
+        delete_queue = front;
         *player_two = front->player;
         front = front->next;
+        if (delete_queue->player->socketAddress == rear->player->socketAddress)
+            rear = NULL;
+        free(delete_queue);
+
     }
 
     else
