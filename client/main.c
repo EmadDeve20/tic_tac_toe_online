@@ -321,8 +321,8 @@ void response_manager(char *buffer)
     // match
     if (regex_value == 0) 
     {   
-        // TODO: get the playground and draw it in terminal display
         playground_parser(buffer);
+        draw_playground();
     }
     else // not match
     {
