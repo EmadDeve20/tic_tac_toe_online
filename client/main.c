@@ -48,7 +48,8 @@ char username[USERNAME_LENGTH] = {0};
 char competitor[USERNAME_LENGTH];
 char playground[PLAYGROUND_SIZE];
 struct sockaddr_in socket_address;
-unsigned short user_points, competitor_points; 
+unsigned short user_points, competitor_points;
+char player_character, competitor_character;
 
 #define CLEAR_BUFFER memset(buffer, '\0', BUFFER_SIZE)
 
@@ -309,6 +310,11 @@ void playground_parser(char *buffer)
     buffer_slice = strtok(NULL, RESTRICT_PARAS_CHAR);
     competitor_points = atoi(buffer_slice);
 
+    buffer_slice = strtok(NULL, RESTRICT_PARAS_CHAR);
+    player_character = *buffer_slice;
+
+    buffer_slice = strtok(NULL, RESTRICT_PARAS_CHAR);
+    competitor_character = *buffer_slice;
 
 }
 
