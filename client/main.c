@@ -9,6 +9,7 @@
 #include <pthread.h>
 #include <errno.h>
 #include <regex.h>
+#include <string.h>
 
 
 #define BUFFER_SIZE 1024
@@ -29,7 +30,7 @@
 #define GET_PLAYGROUND_REQUEST "GET PLAYGROUND"
 #define SELECT_REQUEST_FORMAT "SELECT %s %c %s \r\n" // SELECT $username $select $competitor
 #define SELECT_REQUEST_LENGTH ((USERNAME_LENGTH*2) + 20)
-#define PLAYGROUND_SIZE 9
+#define PLAYGROUND_SIZE 10
 #define CLEAR_SCREEN clear_screen();
 #define PLAYER_FOUND_RESPONSE "PLAYER FOUND"
 
@@ -59,7 +60,7 @@ void request_to_find_a_player();
 void close_end_of_string(char *text);
 int select_player_request(const char select);
 char selected_number();
-// char** response_parser();
+void playground_parser(char *buffer);
 void response_manager(char *buffer);
 void save_playground_status(const char *player, const char *competitor_name, const char playground_cp[PLAYGROUND_SIZE],
     unsigned short user_pt, unsigned short competitor_ps);
@@ -268,24 +269,48 @@ char selected_number()
     return s;
 }
 
-// char** response_parser()
-// {
-//     char *response_slice; 
-//     char **parsed = malloc(10 * USERNAME_LENGTH);
+void playground_parser(char *buffer)
+{
+    char *buffer_slice; 
+    int index = 0;
 
-//     response_slice = strtok(buffer, RESTRICT_PARAS_CHAR);
+    buffer_slice = strtok(buffer, RESTRICT_PARAS_CHAR);
 
-//     int parsed_idx = 0;
+    if (buffer_slice == NULL || strcmp("PLAYGROUND",buffer_slice))
+        return;
 
-//     while ((response_slice != NULL) && parsed_idx < 10)
-//     {
-//         parsed[parsed_idx] = response_slice;
-//         response_slice = strtok(NULL, RESTRICT_PARAS_CHAR);
-//         parsed_idx++;
-//     }
+    buffer_slice = strtok(NULL, RESTRICT_PARAS_CHAR);
 
-//     return parsed; 
-// }
+    if (buffer_slice == NULL || strcmp(username, buffer_slice))
+        return;
+    
+
+    buffer_slice = strtok(NULL, RESTRICT_PARAS_CHAR);
+    while (*buffer_slice != '\0')
+    {
+        competitor[index] = *buffer_slice;
+        buffer_slice = buffer_slice+1;
+        index++;
+    }
+
+
+    buffer_slice = strtok(NULL, RESTRICT_PARAS_CHAR);
+    index = 0;
+    while (*buffer_slice != '\0')
+    {
+        playground[index] = *buffer_slice;
+        buffer_slice = buffer_slice+1;
+        index++;
+    }
+
+    buffer_slice = strtok(NULL, RESTRICT_PARAS_CHAR);
+    user_points = atoi(buffer_slice);
+
+    buffer_slice = strtok(NULL, RESTRICT_PARAS_CHAR);
+    competitor_points = atoi(buffer_slice);
+
+
+}
 
 void response_manager(char *buffer)
 {   
@@ -297,7 +322,7 @@ void response_manager(char *buffer)
     if (regex_value == 0) 
     {   
         // TODO: get the playground and draw it in terminal display
-        printf("\n\nCreate A PlayeGround!!!!!\n\n");
+        playground_parser(buffer);
     }
     else // not match
     {
