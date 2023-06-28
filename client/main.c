@@ -347,11 +347,12 @@ void response_manager(char *buffer)
             }
         }
 
-        if (strlen(buffer) == strlen(PLAYER_FOUND_RESPONSE) && strcmp(buffer, PLAYER_FOUND_RESPONSE) == 0)
-        {
-            printf("Player Found! \n");
-            fflush(stdout);
-        }
+        // TODO: Think About the playerfound response is nesseary or it is useless!
+        // if (strlen(buffer) == strlen(PLAYER_FOUND_RESPONSE) && strcmp(buffer, PLAYER_FOUND_RESPONSE) == 0)
+        // {
+        //     printf("Player Found! \n");
+        //     fflush(stdout);
+        // }
 
     }    
 
