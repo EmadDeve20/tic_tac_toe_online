@@ -109,7 +109,7 @@ void setup_server();
 char** requests_parser();
 void manage_requests(char** request_parsed, const int *sock);
 void insert_user(char *username, const int *sock);
-void delete_user(const int *socket_addr);
+int delete_user(const int *socket_addr);
 void find_a_player(const int *socket_address);
 void handle_disconnected_user(const int *socket_address);
 void create_a_playground(const usersPtr player1, const usersPtr player2);
@@ -386,8 +386,9 @@ void insert_user(char *username, const int *sock)
 
 /*
 delete a username using his name
+return true if player status = playing
 */ 
-void delete_user(const int *socket_addr)
+int delete_user(const int *socket_addr)
 {
     usersPtr *userLists = &list_of_users;
     usersPtr delUser = NULL;
@@ -395,6 +396,7 @@ void delete_user(const int *socket_addr)
     char username[USERNAME_LENGTH];
     memset(username, 0, USERNAME_LENGTH);
     log_type log_t = INFO;
+    int user_is_in_game = 0;
     
     if(!IS_EMPTY(*userLists))
     {
@@ -411,6 +413,7 @@ void delete_user(const int *socket_addr)
         if(!IS_EMPTY(*userLists) && socket_found)
         {   
             delUser = *userLists;
+            if (delUser->p_status == PLAYING) user_is_in_game = 1;
 
             if (IS_EMPTY((*userLists)->nextUser) && IS_EMPTY((*userLists)->prevUser))
                 *userLists = NULL;
@@ -438,10 +441,13 @@ void delete_user(const int *socket_addr)
             close(delUser->socketAddress);
             free(delUser);
             delUser = NULL;
+            return user_is_in_game;
+            log_print(&log_t, "the %s user Delete", username);
         }
 
-        log_print(&log_t, "the %s user Delete", username);
     }
+
+    return user_is_in_game;
 }
 
 /*
