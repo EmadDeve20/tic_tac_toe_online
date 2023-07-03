@@ -484,8 +484,9 @@ void find_a_player(const int *socket_address)
 void handle_disconnected_user(const int *socket_address)
 {
 
-    delete_playground(socket_address);
-    delete_user(socket_address);
+    // if this user is in the playground, remove its competitor from the playground and change its competitor status 
+    if (delete_user(socket_address))
+        delete_playground(socket_address);
 
 }
 
@@ -498,7 +499,9 @@ void create_a_playground(const usersPtr player1, const usersPtr player2)
     log_type log_t = OK;
 
     if (new_playground != NULL)
-    {
+    {   
+        player1->p_status = PLAYING;
+        player2->p_status = PLAYING;
         memset(new_playground->ground, '-', GROUND_SIZE-1);
         new_playground->ground[GROUND_SIZE-1] = '\0';
         new_playground->player_one = player1;
