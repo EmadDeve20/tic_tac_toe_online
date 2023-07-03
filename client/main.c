@@ -34,6 +34,7 @@
 #define PLAYGROUND_SIZE 10
 #define CLEAR_SCREEN clear_screen();
 #define PLAYER_FOUND_RESPONSE "PLAYER FOUND"
+#define REMOVE_COMPETITOR memset(competitor, '\0', USERNAME_LENGTH)
 
 regex_t reegex;
 static volatile sig_atomic_t keep_running = 1;
@@ -361,6 +362,7 @@ void response_manager(char *buffer)
             puts("Wait for a player to found");
             request_to_find_a_player();
             fflush(stdout);
+            REMOVE_COMPETITOR;
         }
 
         // TODO: Think About the playerfound response is nesseary or it is useless!
