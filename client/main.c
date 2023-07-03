@@ -28,6 +28,7 @@
 #define FIND_PLAYER_REQUEST_FORMAT "FIND %s \r\n" // FIND $username 
 #define FIND_PLAYER_REQUEST_LENGTH 29
 #define GET_PLAYGROUND_REQUEST "GET PLAYGROUND"
+#define COMPETITOR_DISCONNECTED_RESPONSE "COMPETITOR DISCONNECTED"
 #define SELECT_REQUEST_FORMAT "SELECT %s %c %s \r\n" // SELECT $username $select $competitor
 #define SELECT_REQUEST_LENGTH ((USERNAME_LENGTH*2) + 20)
 #define PLAYGROUND_SIZE 10
@@ -351,6 +352,15 @@ void response_manager(char *buffer)
                 printf("this name exists please choose another name! \n");
                 fflush(stdout);
             }
+        }
+
+        if (strlen(buffer) == strlen(COMPETITOR_DISCONNECTED_RESPONSE) && strcmp(buffer, COMPETITOR_DISCONNECTED_RESPONSE) == 0)
+        {   
+            CLEAR_SCREEN
+            puts("competitor disconnected");
+            puts("Wait for a player to found");
+            request_to_find_a_player();
+            fflush(stdout);
         }
 
         // TODO: Think About the playerfound response is nesseary or it is useless!
