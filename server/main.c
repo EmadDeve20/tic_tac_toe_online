@@ -442,8 +442,8 @@ int delete_user(const int *socket_addr)
             close(delUser->socketAddress);
             free(delUser);
             delUser = NULL;
-            return user_is_in_game;
             log_print(&log_t, "the %s user Delete", username);
+            return user_is_in_game;
         }
 
     }
