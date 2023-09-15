@@ -534,12 +534,14 @@ void delete_playground(const int *socket_addr)
             {
                 delete_pg->player_one->p_status = WAITING_FOR_A_PLAYER;
                 sd = delete_pg->player_one->socketAddress;
+                enqueue(delete_pg->player_one);
             }
             
             else if (delete_pg->player_one->socketAddress == *socket_addr)
             {
                 delete_pg->player_two->p_status = WAITING_FOR_A_PLAYER;
                 sd = delete_pg->player_two->socketAddress;
+                enqueue(delete_pg->player_two);
             }
 
             free(delete_pg);
