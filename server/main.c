@@ -396,7 +396,6 @@ void delete_user(const int *socket_addr)
     char username[USERNAME_LENGTH];
     memset(username, 0, USERNAME_LENGTH);
     log_type log_t = INFO;
-    int user_is_in_game = 0;
     
     if(!IS_EMPTY(*userLists))
     {
@@ -415,7 +414,6 @@ void delete_user(const int *socket_addr)
         if(!IS_EMPTY(*userLists) && socket_found)
         {   
             delUser = *userLists;
-            if (delUser->p_status == PLAYING) user_is_in_game = 1;
 
             if (IS_EMPTY((*userLists)->nextUser) && IS_EMPTY((*userLists)->prevUser))
                 *userLists = NULL;
@@ -450,12 +448,8 @@ void delete_user(const int *socket_addr)
             free(delUser);
             delUser = NULL;
             log_print(&log_t, "the %s user Delete", username);
-            return user_is_in_game;
         }
-
     }
-
-    return user_is_in_game;
 }
 
 /*
@@ -556,7 +550,6 @@ void delete_playground(const int *socket_addr)
     }
 
     send(sd, COMPETITOR_DISCONNECTED_RESPONSE, strlen(COMPETITOR_DISCONNECTED_RESPONSE), 0);
-    return sd;
 }
 
 //TODO: do test this function
