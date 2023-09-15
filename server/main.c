@@ -110,11 +110,10 @@ void setup_server();
 char** requests_parser();
 void manage_requests(char** request_parsed, const int *sock);
 void insert_user(char *username, const int *sock);
-int delete_user(const int *socket_addr);
+void delete_user(const int *socket_addr);
 void find_a_player(const int *socket_address);
-void handle_disconnected_user(const int *socket_address);
 void create_a_playground(const usersPtr player1, const usersPtr player2);
-int delete_playground(const int *socket_addr);
+void delete_playground(const int *socket_addr);
 int new_username_is_valid(char *);
 void chage_port(const char *port);
 void log_print(const log_type *type, const char* message, ...);
@@ -262,7 +261,7 @@ void setup_server()
             {   
                 if ((valread = read(sd, buffer, 1024)) == 0)
                 {
-                    handle_disconnected_user(&sd);
+                    delete_user(&sd);
                     if (IS_EMPTY(*__users))
                         goto END_TWO;
                 }
@@ -389,7 +388,7 @@ void insert_user(char *username, const int *sock)
 delete a username using his name
 return true if player status = playing
 */ 
-int delete_user(const int *socket_addr)
+void delete_user(const int *socket_addr)
 {
     usersPtr *userLists = &list_of_users;
     usersPtr delUser = NULL;
@@ -411,6 +410,8 @@ int delete_user(const int *socket_addr)
             userLists = &(*userLists)->nextUser;
         }
 
+        if ((*userLists)->p_status == PLAYING) delete_playground(socket_addr);
+
         if(!IS_EMPTY(*userLists) && socket_found)
         {   
             delUser = *userLists;
@@ -431,10 +432,16 @@ int delete_user(const int *socket_addr)
                     (*userLists)->prevUser =  prev_user;
                 }
 
-                else if (!IS_EMPTY((*userLists)->nextUser) && IS_EMPTY((*userLists)->prevUser))
+                if (!IS_EMPTY((*userLists)->nextUser) && IS_EMPTY((*userLists)->prevUser))
                 {
                     *userLists = (*userLists)->nextUser;
                     (*userLists)->prevUser = NULL;
+                }
+            
+                if (IS_EMPTY((*userLists)->nextUser) && !IS_EMPTY((*userLists)->prevUser))
+                {
+                    *userLists = (*userLists)->prevUser;
+                    (*userLists)->nextUser = NULL;
                 }
             }
 
@@ -481,15 +488,6 @@ void find_a_player(const int *socket_address)
     }
 }
 
-// TODO: Test this function 
-void handle_disconnected_user(const int *socket_address)
-{
-
-    // if this user is in the playground, remove its competitor from the playground and change its competitor status 
-    if (delete_user(socket_address))
-        delete_playground(socket_address);
-
-}
 
 
 void create_a_playground(const usersPtr player1, const usersPtr player2)
@@ -524,9 +522,9 @@ void create_a_playground(const usersPtr player1, const usersPtr player2)
 
 }
 
-//TODO: Do test this function
+
 // @return the socket address of the user not disconnected
-int delete_playground(const int *socket_addr)
+void delete_playground(const int *socket_addr)
 {
     playGroundPtr *pg = &mainGround;
     int sd = 0;
@@ -538,16 +536,16 @@ int delete_playground(const int *socket_addr)
             playGroundPtr delete_pg = *pg;
             *pg = (*pg)->nextPlayGround;
 
-            if (!IS_EMPTY(delete_pg->player_one))
+            if (delete_pg->player_two->socketAddress == *socket_addr)
             {
                 delete_pg->player_one->p_status = WAITING_FOR_A_PLAYER;
                 sd = delete_pg->player_one->socketAddress;
             }
             
-            if (!IS_EMPTY(delete_pg->player_two))
+            else if (delete_pg->player_one->socketAddress == *socket_addr)
             {
                 delete_pg->player_two->p_status = WAITING_FOR_A_PLAYER;
-                sd = delete_pg->player_one->socketAddress;
+                sd = delete_pg->player_two->socketAddress;
             }
 
             free(delete_pg);
