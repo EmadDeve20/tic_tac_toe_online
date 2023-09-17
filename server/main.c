@@ -124,6 +124,7 @@ void send_playground_data(const playGroundPtr pg);
 int reset_playground(playGroundPtr pg);
 void enqueue(usersPtr player);
 void dequeue(usersPtr *player_one, usersPtr *player_two);
+void remove_player_in_queue(const int *socket);
 
 int main(int argc, char **argv)
 {
@@ -411,6 +412,9 @@ void delete_user(const int *socket_addr)
 
         if ((*userLists)->p_status == PLAYING) delete_playground(socket_addr);
 
+        // if one of player disconnected and he is in waiting queue, remove it from queue
+        else if ((*userLists)->p_status == WAITING_FOR_A_PLAYER) remove_player_in_queue(socket_addr);
+
         if(!IS_EMPTY(*userLists) && socket_found)
         {   
             delUser = *userLists;
@@ -534,14 +538,12 @@ void delete_playground(const int *socket_addr)
             {
                 delete_pg->player_one->p_status = WAITING_FOR_A_PLAYER;
                 sd = delete_pg->player_one->socketAddress;
-                enqueue(delete_pg->player_one);
             }
             
             else if (delete_pg->player_one->socketAddress == *socket_addr)
             {
                 delete_pg->player_two->p_status = WAITING_FOR_A_PLAYER;
                 sd = delete_pg->player_two->socketAddress;
-                enqueue(delete_pg->player_two);
             }
 
             free(delete_pg);
@@ -830,6 +832,40 @@ void dequeue(usersPtr *player_one, usersPtr *player_two)
     {
         *player_one = NULL;
         *player_two = NULL;
+    }
+}
+
+
+void remove_player_in_queue(const int *socket)
+{
+    QueueOfPlayers *head_queue = &front;
+
+    if (!IS_EMPTY(*head_queue) && (*head_queue)->player->socketAddress == *socket)
+    {
+        QueueOfPlayers delete_queue = *head_queue;
+        front = rear = NULL;
+        free(delete_queue);
+    }
+    else 
+    {   
+        head_queue = &(*head_queue)->next;
+        QueueOfPlayers *prev_queue = head_queue;
+        
+        while (!IS_EMPTY(*head_queue))
+        {
+            if ((*head_queue)->player->socketAddress == *socket)
+            {   
+                QueueOfPlayers delete_queue = *head_queue;
+                (*prev_queue)->next = (*head_queue)->next;
+                free(delete_queue);
+                return;
+            }
+            else
+            {
+                prev_queue = head_queue;
+                head_queue = &(*head_queue)->next;
+            }
+        }
     }
 }
 
