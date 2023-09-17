@@ -842,9 +842,18 @@ void remove_player_in_queue(const int *socket)
 
     if (!IS_EMPTY(*head_queue) && (*head_queue)->player->socketAddress == *socket)
     {
-        QueueOfPlayers delete_queue = *head_queue;
-        front = rear = NULL;
-        free(delete_queue);
+        if (front->player->socketAddress == rear->player->socketAddress)
+        {
+            QueueOfPlayers delete_queue = *head_queue;
+            front = rear = NULL;
+            free(delete_queue);
+        }
+        else 
+        {
+            QueueOfPlayers delete_queue = *head_queue;
+            front = front->next;
+            free(delete_queue);
+        }
     }
     else 
     {   
