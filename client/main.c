@@ -46,8 +46,7 @@ pthread_attr_t pthread_custom_attr;
 int port = 8013, sock = 0, client_fd, valread, game_is_start = 0, login_status = 2;
 
 char server_address[1024];
-char username[USERNAME_LENGTH] = {0};
-char competitor[USERNAME_LENGTH];
+char username[USERNAME_LENGTH] = {0} ,turn_playing[USERNAME_LENGTH] = {0}, competitor[USERNAME_LENGTH] = {0};
 char playground[PLAYGROUND_SIZE];
 struct sockaddr_in socket_address;
 unsigned short user_points, competitor_points;
