@@ -407,7 +407,8 @@ void draw_playground()
 
     CLEAR_SCREEN;
 
-    printf("%s: %d\t\t\t%s: %d\n\n\n", username, user_points, competitor, competitor_points);
+    printf("%s: %d\t\t\t%s: %d\n", username, user_points, competitor, competitor_points);
+    printf("Your Character: %c\t\t\tCompetitor Character: %c\n\n\n",  player_character, competitor_character);
     
     for (int i = 0; i < PLAYGROUND_SIZE; i++)
     {
