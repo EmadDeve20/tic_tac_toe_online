@@ -86,6 +86,7 @@ typedef struct playground {
     unsigned short secound_player_points;
     struct playground *nextPlayGround;
     struct playground *prevPlayGround;
+    char *player_turn;
 } playGround;
 
 typedef playGround *playGroundPtr;
@@ -492,10 +493,11 @@ void create_a_playground(const usersPtr player1, const usersPtr player2)
 {
     playGroundPtr new_playground;
     new_playground = malloc(sizeof(playGround));
+    new_playground->player_turn = malloc(USERNAME_LENGTH);
 
     log_type log_t = OK;
 
-    if (new_playground != NULL)
+    if (new_playground != NULL && new_playground->player_turn != NULL)
     {   
         player1->p_status = PLAYING;
         player2->p_status = PLAYING;
@@ -505,7 +507,8 @@ void create_a_playground(const usersPtr player1, const usersPtr player2)
         new_playground->player_two = player2;
         new_playground->player_one_char =  rand() % 2 ? 'X' : 'O';
         new_playground->player_two_char =  new_playground->player_one_char == 'O' ? 'X' : 'O';
-        new_playground->first_player_points = new_playground->secound_player_points = 0; 
+        new_playground->first_player_points = new_playground->secound_player_points = 0;
+        new_playground->player_turn = rand() % 2 ? new_playground->player_one->username : new_playground->player_two->username;  
         new_playground->nextPlayGround = mainGround;
         mainGround = new_playground;
 
