@@ -317,6 +317,14 @@ void playground_parser(char *buffer)
     buffer_slice = strtok(NULL, RESTRICT_PARAS_CHAR);
     competitor_character = *buffer_slice;
 
+    buffer_slice = strtok(NULL, RESTRICT_PARAS_CHAR);
+    index = 0;
+    while (*buffer_slice != '\0')
+    {
+        turn_playing[index] = *buffer_slice;
+        buffer_slice++;
+        index++;
+    }
 }
 
 void response_manager(char *buffer)
