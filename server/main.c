@@ -40,7 +40,7 @@
 #define LOG_INFO_FORMAT             "\033[0;37m[%d-%02d-%02d  %02d:%02d] \033[0;34m%s\n\033[0m"
 #define LOG_DEFAULT_FORMAT          "[%d-%02d-%02d  %02d:%02d] %s\n"
 
-#define PLAYGROUND_FORMAT           "PLAYGROUND %s%s%s %d %d %c %c \r\n"
+#define PLAYGROUND_FORMAT           "PLAYGROUND %s%s%s %d %d %c %c %s \r\n"
 #define PLAYGROUND_RESPONSE_SIZE ((USERNAME_LENGTH*2) + GROUND_SIZE + 30) 
 
 typedef enum LogMessageType
@@ -759,11 +759,11 @@ void send_playground_data(const playGroundPtr pg)
 
     sprintf(playground_data_one, PLAYGROUND_FORMAT, pg->player_one->username, pg->player_two->username, 
         pg->ground, pg->first_player_points, pg->secound_player_points, pg->player_one_char,
-        pg->player_two_char);
+        pg->player_two_char, pg->player_turn);
     
     sprintf(playground_data_two, PLAYGROUND_FORMAT, pg->player_two->username, pg->player_one->username, 
         pg->ground, pg->secound_player_points, pg->first_player_points, pg->player_two_char,
-        pg->player_one_char);
+        pg->player_one_char, pg->player_turn);
     
     send(pg->player_one->socketAddress, playground_data_one, PLAYGROUND_RESPONSE_SIZE, 0);
     send(pg->player_two->socketAddress, playground_data_two, PLAYGROUND_RESPONSE_SIZE, 0);
