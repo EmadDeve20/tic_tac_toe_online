@@ -29,7 +29,7 @@
 #define FIND_PLAYER_REQUEST_LENGTH 29
 #define GET_PLAYGROUND_REQUEST "GET PLAYGROUND"
 #define COMPETITOR_DISCONNECTED_RESPONSE "COMPETITOR DISCONNECTED"
-#define SELECT_REQUEST_FORMAT "SELECT %s %c %s \r\n" // SELECT $username $select $competitor
+#define SELECT_REQUEST_FORMAT "SELECT %s %d %s \r\n" // SELECT $username $choose_number $competitor
 #define SELECT_REQUEST_LENGTH ((USERNAME_LENGTH*2) + 20)
 #define PLAYGROUND_SIZE 10
 #define CLEAR_SCREEN clear_screen();
@@ -72,6 +72,7 @@ void change_username();
 
 void draw_playground();
 void play_game();
+void playing();
 
 static void signal_handler(int _);
 
@@ -443,8 +444,51 @@ void play_game()
     {
         printf("\n\nIt's your turn to choose. Enter the desired number (between 1 and 9)\n");
         fflush(stdout);
+        playing();
     }
 }
+
+void playing()
+{
+    int choose = 0;
+    scanf("%d", &choose);
+
+    while (1)
+    {
+
+        if (choose < 1 || choose > 9)
+        {
+            printf("Please choose between 1 and 9 numbers!\n");
+            fflush(stdout);
+            scanf("%d", &choose);
+        }
+        else
+        {   
+            choose--;
+            if (playground[choose] != '-')
+            {
+                printf("This number has been selected! choose another number\n");
+                fflush(stdout);
+                scanf("%d", &choose);
+            }
+            else
+            {
+                char select_request[SELECT_REQUEST_LENGTH] = {0};
+                sprintf(select_request, SELECT_REQUEST_FORMAT, username, choose, competitor);
+
+                int s;
+                do
+                {
+                    s = send(sock, select_request, SELECT_REQUEST_LENGTH, 0);
+                } while (s == -1);
+                draw_playground();
+                return;
+            }
+        }
+    
+    }
+}
+
 
 /*
 this function is for closing the end of text with a '\0' character
