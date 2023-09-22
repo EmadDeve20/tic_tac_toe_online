@@ -71,6 +71,8 @@ void change_username();
 // int check_player_found();
 
 void draw_playground();
+void play_game();
+
 static void signal_handler(int _);
 
 void *server_listener(void *arg)
@@ -338,6 +340,7 @@ void response_manager(char *buffer)
     {   
         playground_parser(buffer);
         draw_playground();
+        play_game();
     }
     else // not match
     {
@@ -427,6 +430,20 @@ void draw_playground()
     }
 
     fflush(stdout);
+}
+
+void play_game()
+{
+    if (strcmp(username, turn_playing) != 0)
+    {
+        printf("\n\nWait for the opponent to play ...\n");
+        fflush(stdout);
+    }
+    else if (strcmp(username, turn_playing) == 0)
+    {
+        printf("\n\nIt's your turn to choose. Enter the desired number (between 1 and 9)\n");
+        fflush(stdout);
+    }
 }
 
 /*
