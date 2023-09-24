@@ -27,6 +27,7 @@
 #define LOGIN_STATUS_FAILED_NOT_VALID_USERNAME "LOGIN NKU"
 #define PLAYER_FOUND_RESPONSE "PLAYER FOUND"
 #define COMPETITOR_DISCONNECTED_RESPONSE "COMPETITOR DISCONNECTED"
+#define PLAYER_SELECT_REQUEST "SELECT"
 #define PLAYER_FOUND_RESPONSE_SIZE strlen(PLAYER_FOUND_RESPONSE)
 #define LOGIN_OK_SIZE strlen(LOGIN_STATUS_OK)
 #define LOGIN_NOT_OK_SIZE strlen(LOGIN_STATUS_FAILED_MEMORY_SIZE)
@@ -115,6 +116,8 @@ void delete_user(const int *socket_addr);
 void find_a_player(const int *socket_address);
 void create_a_playground(const usersPtr player1, const usersPtr player2);
 void delete_playground(const int *socket_addr);
+void update_playground(const int *socket_addr, const int *select);
+void switch_turn_player(playGroundPtr pg);
 int new_username_is_valid(char *);
 void chage_port(const char *port);
 void log_print(const log_type *type, const char* message, ...);
@@ -331,6 +334,12 @@ void manage_requests(char** request_parsed, const int *sock)
     {
         find_a_player(sock);
         return;
+    }
+
+    if (strcmp(request_parsed[0], PLAYER_SELECT_REQUEST) == 0)
+    {   
+        int selected = atoi(request_parsed[2]);
+        update_playground(sock, &selected);
     }
 }
 
@@ -559,6 +568,66 @@ void delete_playground(const int *socket_addr)
     send(sd, COMPETITOR_DISCONNECTED_RESPONSE, strlen(COMPETITOR_DISCONNECTED_RESPONSE), 0);
 }
 
+
+void update_playground(const int *socket_addr, const int *select)
+{
+    playGroundPtr *pg = &mainGround;
+    bool selected = 0;
+
+    while (!IS_EMPTY(*pg) && !selected)
+    {
+        if ((*pg)->player_one->socketAddress == *socket_addr || (*pg)->player_two->socketAddress == *socket_addr)
+        {
+            if ((*pg)->player_one->socketAddress == *socket_addr)
+            {
+                if ((*pg)->ground[*select] == '-')
+                {
+                    (*pg)->ground[*select] = (*pg)->player_one_char;
+                    switch_turn_player(*pg);
+                    selected = 1;
+                }
+            }
+            else if ((*pg)->player_two->socketAddress == *socket_addr)
+            {
+                if ((*pg)->ground[*select] == '-')
+                {
+                    (*pg)->ground[*select] = (*pg)->player_two_char;
+                    switch_turn_player(*pg);
+                    selected = 1;
+                }
+            }
+        }
+
+        else
+        {
+            pg = &(*pg)->nextPlayGround;
+        }
+    }
+
+    if (selected)
+    {
+        send_playground_data(*pg);
+    }
+
+}
+
+
+
+void switch_turn_player(playGroundPtr pg)
+{
+
+    if (strcmp(pg->player_turn, pg->player_one->username) == 0)
+    {
+        pg->player_turn = pg->player_two->username;
+    }
+    else if (strcmp(pg->player_turn, pg->player_two->username) == 0)
+    {
+        pg->player_turn = pg->player_one->username;
+    }
+
+}
+
+
 //TODO: do test this function
 //TODO: if the user choice is not valid! send a good message to his user and send message.
 void perform_player_selection(const char *username_1, const unsigned short select, const char *username_2)
@@ -751,6 +820,8 @@ int check_who_is_winner(playGroundPtr pg)
     return 0;
 }
 
+
+// TODO: Check who is winner or the playgriund is full or not
 void send_playground_data(const playGroundPtr pg)
 {
 
