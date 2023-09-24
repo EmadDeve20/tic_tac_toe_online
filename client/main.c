@@ -35,6 +35,7 @@
 #define CLEAR_SCREEN clear_screen();
 #define PLAYER_FOUND_RESPONSE "PLAYER FOUND"
 #define REMOVE_COMPETITOR memset(competitor, '\0', USERNAME_LENGTH)
+#define REMOVE_TURN_PLAYING memset(turn_playing, '\0', USERNAME_LENGTH)
 
 regex_t reegex;
 static volatile sig_atomic_t keep_running = 1;
@@ -73,6 +74,7 @@ void change_username();
 void draw_playground();
 void play_game();
 void playing();
+void remove_competitor_data();
 
 static void signal_handler(int _);
 
@@ -369,11 +371,11 @@ void response_manager(char *buffer)
         if (strlen(buffer) == strlen(COMPETITOR_DISCONNECTED_RESPONSE) && strcmp(buffer, COMPETITOR_DISCONNECTED_RESPONSE) == 0)
         {   
             CLEAR_SCREEN
+            remove_competitor_data();
             puts("competitor disconnected");
             puts("Wait for a player to found");
             request_to_find_a_player();
             fflush(stdout);
-            REMOVE_COMPETITOR;
         }
 
         // TODO: Think About the playerfound response is nesseary or it is useless!
@@ -390,6 +392,12 @@ void response_manager(char *buffer)
     //     save_playground_status(response_parsed[1], response_parsed[2], response_parsed[3],
     //     atoi(response_parsed[4]), atoi(response_parsed[5]));
     // }
+}
+
+void remove_competitor_data()
+{
+    REMOVE_COMPETITOR;
+    REMOVE_TURN_PLAYING;
 }
 
 void save_playground_status(const char *player, const char *competitor_name, const char playground_cp[PLAYGROUND_SIZE], 
