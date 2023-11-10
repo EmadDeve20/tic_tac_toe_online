@@ -291,13 +291,16 @@ void playground_parser(char *buffer)
     if (buffer_slice == NULL || strcmp(username, buffer_slice))
         return;
     
-
     buffer_slice = strtok(NULL, RESTRICT_PARAS_CHAR);
-    while (*buffer_slice != '\0')
+
+    if (strlen(competitor) == 0)
     {
-        competitor[index] = *buffer_slice;
-        buffer_slice = buffer_slice+1;
-        index++;
+        while (*buffer_slice != '\0')
+        {
+            competitor[index] = *buffer_slice;
+            buffer_slice = buffer_slice+1;
+            index++;
+        }
     }
 
 
@@ -458,8 +461,17 @@ void play_game()
 
 void playing()
 {
-    int choose = 0;
-    scanf("%d", &choose);
+    int choose;
+    char input[100];
+    
+    fgets(input, sizeof(input), stdin);
+    
+    while (sscanf(input, "%d", &choose) != 1)
+    {
+        printf("Please Enter a Number Not Character!\n");
+        fflush(stdout);
+        fgets(input, sizeof(input), stdin);
+    }
 
     while (1)
     {
@@ -484,12 +496,7 @@ void playing()
                 char select_request[SELECT_REQUEST_LENGTH] = {0};
                 sprintf(select_request, SELECT_REQUEST_FORMAT, username, choose, competitor);
 
-                int s;
-                do
-                {
-                    s = send(sock, select_request, SELECT_REQUEST_LENGTH, 0);
-                } while (s == -1);
-                draw_playground();
+                send(sock, select_request, SELECT_REQUEST_LENGTH, 0);
                 return;
             }
         }
